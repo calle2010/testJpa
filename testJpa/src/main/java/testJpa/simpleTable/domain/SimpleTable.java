@@ -1,16 +1,18 @@
 package testJpa.simpleTable.domain;
 
-import org.springframework.stereotype.Repository;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * a simple table without relationships
  */
-@Repository
+@Entity(name = "SIMPLE_TABLE")
 public class SimpleTable {
 
-	private long id;
+    @Id
+    private long id;
 
-	private String data;
+    private String data;
 
     /**
      * @return the id
@@ -20,7 +22,8 @@ public class SimpleTable {
     }
 
     /**
-     * @param id the id to set
+     * @param id
+     *            the id to set
      */
     public void setId(long id) {
         this.id = id;
@@ -34,7 +37,8 @@ public class SimpleTable {
     }
 
     /**
-     * @param data the data to set
+     * @param data
+     *            the data to set
      */
     public void setData(String data) {
         this.data = data;

@@ -1,6 +1,15 @@
 package testJpa.simpleTable;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import testJpa.TestJpaConfiguration;
 import testJpa.simpleTable.dao.SimpleTableDao;
+import testJpa.simpleTable.domain.SimpleTable;
 
 /**
  * test CRUD functionality of a simple table without relationships
@@ -24,12 +34,14 @@ public class SimpleTableTest {
 
     @Test
     public void testFindById() {
-        fail("not yet implemented");
+        SimpleTable entity = dao.findOne(1000);
+        assertEquals(1000, entity.getId());
+        assertEquals("one thousand", entity.getData());
     }
 
-    @Test(expected = DataAccessException.class)
+    @Test
     public void testFindByIdFailing() {
-        fail("not yet implemented");
+        assertNull(dao.findOne(999));
     }
 
     @Test
@@ -44,57 +56,103 @@ public class SimpleTableTest {
 
     @Test
     public void testFindAll() {
-        fail("not yet implemented");
+        Iterable<SimpleTable> allEntries = dao.findAll();
+        List<SimpleTable> list = new ArrayList<>();
+
+        for (SimpleTable st : allEntries) {
+            list.add(st);
+        }
+
+        assertEquals(3, list.size());
+        assertEquals(1000, list.get(0).getId());
+        assertEquals(1001, list.get(0).getId());
+        assertEquals(1002, list.get(0).getId());
     }
 
     @Test
     public void testExists() {
-        fail("not yet implemented");
+        assertTrue(dao.exists(1000));
     }
 
     @Test
     public void testExistsFailing() {
-        fail("not yet implemented");
+        assertFalse(dao.exists(999));
     }
 
     @Test
     public void testCreate() {
-        fail("not yet implemented");
+        SimpleTable st = new SimpleTable();
+        st.setData("new entry");
+
+        SimpleTable stPersisted = dao.save(st);
+
+        assertNotEquals(0, stPersisted.getId());
+
+        assertEquals(4, dao.count().longValue());
     }
 
     @Test
     public void testCreateAlreadyExists() {
-        fail("not yet implemented");
+        SimpleTable st = new SimpleTable();
+        st.setId(1000);
+        st.setData("entry with duplicate key");
+
+        dao.save(st);
     }
 
     @Test
     public void testUpdate() {
-        fail("not yet implemented");
+        SimpleTable st = dao.findOne(1000);
+
+        st.setData("new data");
+
+        SimpleTable stPersisted = dao.save(st);
+
+        assertEquals("new data", st.getData());
     }
 
     @Test
-    public void testRemove() {
-        fail("not yet implemented");
+    public void testRemoveManaged() {
+        SimpleTable st = dao.findOne(1000);
+        assertNotNull(st);
+
+        dao.delete(st);
+
+        assertNull(dao.findOne(1000));
+
+    }
+
+    @Test
+    public void testRemoveUnmanaged() {
+        SimpleTable st = new SimpleTable();
+        st.setId(1000);
+
+        dao.delete(st);
+
+        assertNull(dao.findOne(1000));
+
     }
 
     @Test(expected = DataAccessException.class)
     public void testRemoveFailing() {
-        fail("not yet implemented");
+        SimpleTable st = new SimpleTable();
+        st.setId(999);
+        dao.delete(st);
     }
 
     @Test
     public void testCount() {
-        fail("not yet implemented");
+        assertEquals(3, dao.count().longValue());
     }
 
     @Test
     public void testisEmpty() {
-        fail("not yet implemented");
+        assertTrue(dao.isEmpty());
     }
 
     @Test
     public void testisEmptyFalse() {
-        fail("not yet implemented");
+        assertFalse(dao.isEmpty());
     }
 
 }

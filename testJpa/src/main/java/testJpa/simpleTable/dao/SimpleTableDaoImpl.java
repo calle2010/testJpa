@@ -1,11 +1,18 @@
 package testJpa.simpleTable.dao;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
+
 import org.springframework.stereotype.Repository;
 
 import testJpa.simpleTable.domain.SimpleTable;
 
 @Repository
 public class SimpleTableDaoImpl implements SimpleTableDao {
+
+    @PersistenceUnit
+    EntityManagerFactory emf;
 
     @Override
     public SimpleTable save(SimpleTable entity) {
@@ -15,8 +22,9 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
 
     @Override
     public SimpleTable findOne(long id) {
-        // TODO Auto-generated method stub
-        return null;
+        EntityManager em = emf.createEntityManager();
+
+        return em.find(SimpleTable.class, id);
     }
 
     @Override
