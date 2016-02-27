@@ -1,0 +1,11 @@
+<dataset>
+  <SIMPLE_TABLE
+    ID="1000"
+    DATA="one thousand" />
+  <SIMPLE_TABLE
+    ID="1001"
+    DATA="one thousand one" />
+  <SIMPLE_TABLE
+    ID="1002"
+    DATA="one thousand two" />
+</dataset>

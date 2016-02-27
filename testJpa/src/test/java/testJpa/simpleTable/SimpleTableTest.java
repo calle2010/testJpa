@@ -16,7 +16,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import testJpa.TestJpaConfiguration;
 import testJpa.simpleTable.dao.SimpleTableDao;
@@ -26,13 +33,16 @@ import testJpa.simpleTable.domain.SimpleTable;
  * test CRUD functionality of a simple table without relationships
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestJpaConfiguration.class)
+@ContextConfiguration(classes = { TestJpaConfiguration.class })
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class SimpleTableTest {
 
     @Autowired
     SimpleTableDao dao;
 
     @Test
+    @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindById() {
         SimpleTable entity = dao.findOne(1000);
         assertEquals(1000, entity.getId());

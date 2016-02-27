@@ -18,7 +18,6 @@
   	<dependency>
   		<groupId>org.dbunit</groupId>
   		<artifactId>dbunit</artifactId>
-  		<version>2.5.1</version>
   		<scope>test</scope>
   		<exclusions>
   			<exclusion>
@@ -26,6 +25,7 @@
   				<groupId>org.slf4j</groupId>
   			</exclusion>
   		</exclusions>
+  		<version>2.5.1</version>
   	</dependency>
   	<dependency>
   		<groupId>org.springframework</groupId>
@@ -72,6 +72,11 @@
   	  <groupId>org.apache.derby</groupId>
   	  <artifactId>derby</artifactId>
   	  <scope>test</scope>
+  	</dependency>
+  	<dependency>
+  	  <groupId>com.github.springtestdbunit</groupId>
+  	  <artifactId>spring-test-dbunit</artifactId>
+  	  <version>1.2.1</version>
   	</dependency>
   </dependencies>
   <dependencyManagement>

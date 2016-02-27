@@ -1,14 +1,23 @@
 package testJpa;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * Spring configuration class
@@ -35,11 +44,45 @@ public class TestJpaConfiguration {
      * @return entity manager factory bean
      */
     @Bean
-    LocalContainerEntityManagerFactoryBean localEntityManagerFactoryBean() {
+    @DependsOn("liquibase")
+    public LocalContainerEntityManagerFactoryBean localEntityManagerFactoryBean() {
         LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
         lcemfb.setPersistenceUnitName("testJpa");
         lcemfb.setJpaDialect(new EclipseLinkJpaDialect());
+        lcemfb.setDataSource(dataSource());
         return lcemfb;
+    }
+
+    /**
+     * data source to be used
+     * 
+     * @return the data source
+     */
+    @Bean
+    public DataSource dataSource() {
+        DriverManagerDataSource ds = new DriverManagerDataSource();
+        ds.setUrl("jdbc:derby:memory:test-jpa;create=true");
+        return ds;
+    }
+
+    /**
+     * setup Liquibase
+     * 
+     * @return the Liquibase bean
+     */
+    @Bean
+    public SpringLiquibase liquibase() {
+        SpringLiquibase lqb = new SpringLiquibase();
+
+        lqb.setDataSource(dataSource());
+        lqb.setChangeLog("classpath:liquibase/db.changelog.xml");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("verbose", "true");
+        lqb.setChangeLogParameters(params);
+
+        return lqb;
+
     }
 
     /**
