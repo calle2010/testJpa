@@ -1,5 +1,7 @@
 package testJpa.simpleTable.dao;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -31,7 +33,7 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
     }
 
     @Override
-    public SimpleTable findOne(long id) {
+    public SimpleTable findOne(Long id) {
         // EntityManager em = emf.createEntityManager();
 
         SimpleTable entity = em.find(SimpleTable.class, id);
@@ -40,7 +42,7 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
     }
 
     @Override
-    public Iterable<SimpleTable> findAll() {
+    public List<SimpleTable> findAll() {
         // EntityManager em = emf.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -52,7 +54,7 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
     }
 
     @Override
-    public Long count() {
+    public long count() {
         // EntityManager em = emf.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -73,7 +75,7 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
     }
 
     @Override
-    public boolean exists(long id) {
+    public boolean exists(Long id) {
         // EntityManager em = emf.createEntityManager();
 
         return null != em.find(SimpleTable.class, id);
@@ -96,7 +98,7 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
     }
 
     @Override
-    public Iterable<SimpleTable> findByData(String data) {
+    public List<SimpleTable> findByData(String data) {
         // EntityManager em = emf.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();

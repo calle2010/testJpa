@@ -1,5 +1,7 @@
 package testJpa.simpleTable.dao;
 
+import java.util.List;
+
 import testJpa.simpleTable.domain.SimpleTable;
 
 /**
@@ -24,14 +26,14 @@ public interface SimpleTableDao {
      *            to find
      * @return the entity
      */
-    SimpleTable findOne(long id);
+    SimpleTable findOne(Long id);
 
     /**
      * Retrieve all entities from the table. No specific order is guaranteed.
      *
      * @return all entities
      */
-    Iterable<SimpleTable> findAll();
+    List<SimpleTable> findAll();
 
     /**
      * Get count of entities in the table.
@@ -41,7 +43,7 @@ public interface SimpleTableDao {
      *
      * @return count of entities in the table
      */
-    Long count();
+    long count();
 
     /**
      * delete one entity
@@ -58,7 +60,7 @@ public interface SimpleTableDao {
      *            to find
      * @return true if entity exists
      */
-    boolean exists(long id);
+    boolean exists(Long id);
 
     /**
      * (not in CrudRepository) more efficient method than
@@ -75,6 +77,6 @@ public interface SimpleTableDao {
      *            the data to find
      * @return the matching entities
      */
-    Iterable<SimpleTable> findByData(String data);
+    List<SimpleTable> findByData(String data);
 
 }

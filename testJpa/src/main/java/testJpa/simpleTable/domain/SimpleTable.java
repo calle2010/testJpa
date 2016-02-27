@@ -17,14 +17,14 @@ public class SimpleTable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_SIMPLE_TABLE_ID")
     @SequenceGenerator(name = "SEQ_SIMPLE_TABLE_ID", sequenceName = "SEQ_SIMPLE_TABLE_ID", allocationSize = 50, initialValue = 50)
     @OrderBy
-    private long id;
+    private Long id;
 
     private String data;
 
     /**
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -32,7 +32,7 @@ public class SimpleTable {
      * @param id
      *            the id to set
      */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -7,10 +7,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -63,7 +62,7 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testCount() {
-        assertEquals(3, dao.count().longValue());
+        assertEquals(3, dao.count());
     }
 
     @Test
@@ -77,32 +76,27 @@ public class SimpleTableTest {
 
         SimpleTable stPersisted = dao.save(st);
 
-        assertNotEquals(0, stPersisted.getId());
+        assertNotEquals(0, stPersisted.getId().longValue());
 
-        assertEquals(4, dao.count().longValue());
+        assertEquals(4, dao.count());
     }
 
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testExists() {
-        assertTrue(dao.exists(1000));
+        assertTrue(dao.exists(1000l));
     }
 
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testExistsFailing() {
-        assertFalse(dao.exists(999));
+        assertFalse(dao.exists(999l));
     }
 
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindAll() {
-        Iterable<SimpleTable> allEntries = dao.findAll();
-        List<SimpleTable> list = new ArrayList<>();
-
-        for (SimpleTable st : allEntries) {
-            list.add(st);
-        }
+        List<SimpleTable> list = dao.findAll();
 
         assertEquals(3, list.size());
     }
@@ -110,38 +104,32 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindByData() {
-        Iterable<SimpleTable> entities = dao.findByData("one thousand");
+        List<SimpleTable> list = dao.findByData("one thousand");
 
-        Iterator<SimpleTable> ei = entities.iterator();
-
-        SimpleTable entity = ei.next();
-
-        assertEquals(1000, entity.getId());
-        assertFalse(ei.hasNext());
+        assertEquals(1, list.size());
+        assertEquals(1000, list.get(0).getId().longValue());
     }
 
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindByDataFailing() {
-        Iterable<SimpleTable> entities = dao.findByData("does not exist");
+        List<SimpleTable> entities = dao.findByData("does not exist");
 
-        Iterator<SimpleTable> ei = entities.iterator();
-
-        assertFalse(ei.hasNext());
+        assertTrue(CollectionUtils.isEmpty(entities));
     }
 
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindById() {
-        SimpleTable entity = dao.findOne(1000);
-        assertEquals(1000, entity.getId());
+        SimpleTable entity = dao.findOne(1000l);
+        assertEquals(1000, entity.getId().longValue());
         assertEquals("one thousand", entity.getData());
     }
 
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindByIdFailing() {
-        assertNull(dao.findOne(999));
+        assertNull(dao.findOne(999l));
     }
 
     @Test
@@ -162,13 +150,13 @@ public class SimpleTableTest {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testRemoveManaged() {
-        SimpleTable st = dao.findOne(1000);
+        SimpleTable st = dao.findOne(1000l);
         assertNotNull("entity to delete must not be null", st);
 
         dao.delete(st);
 
-        assertNull("most not find deleted entity", dao.findOne(1000));
-        assertEquals("must be one entry less", 2, dao.count().longValue());
+        assertNull("most not find deleted entity", dao.findOne(1000l));
+        assertEquals("must be one entry less", 2, dao.count());
 
     }
 
@@ -180,7 +168,7 @@ public class SimpleTableTest {
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testRemoveUnmanaged() {
         SimpleTable st = new SimpleTable();
-        st.setId(1000);
+        st.setId(1000l);
 
         // this must fail since the entity to delete is unmanaged
         dao.delete(st);
@@ -195,7 +183,7 @@ public class SimpleTableTest {
     public void testUpdateManaged() {
         LOGGER.info("start test update managed");
 
-        SimpleTable st = dao.findOne(1000);
+        SimpleTable st = dao.findOne(1000l);
 
         st.setData("updated");
 
@@ -211,7 +199,7 @@ public class SimpleTableTest {
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
         SimpleTable st = new SimpleTable();
-        st.setId(1000);
+        st.setId(1000l);
         st.setData("updated");
 
         dao.save(st);
