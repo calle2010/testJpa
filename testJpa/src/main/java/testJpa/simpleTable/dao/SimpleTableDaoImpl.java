@@ -1,7 +1,10 @@
 package testJpa.simpleTable.dao;
 
+import org.springframework.stereotype.Repository;
+
 import testJpa.simpleTable.domain.SimpleTable;
 
+@Repository
 public class SimpleTableDaoImpl implements SimpleTableDao {
 
     @Override
