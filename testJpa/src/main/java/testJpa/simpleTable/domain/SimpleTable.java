@@ -1,7 +1,11 @@
 package testJpa.simpleTable.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OrderBy;
+import javax.persistence.SequenceGenerator;
 
 /**
  * a simple table without relationships
@@ -10,6 +14,9 @@ import javax.persistence.Id;
 public class SimpleTable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_SIMPLE_TABLE_ID")
+    @SequenceGenerator(name = "SEQ_SIMPLE_TABLE_ID", sequenceName = "SEQ_SIMPLE_TABLE_ID", allocationSize = 50, initialValue = 50)
+    @OrderBy
     private long id;
 
     private String data;

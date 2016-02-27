@@ -27,7 +27,7 @@ public interface SimpleTableDao {
     SimpleTable findOne(long id);
 
     /**
-     * retrieve all entities from the table
+     * Retrieve all entities from the table. No specific order is guaranteed.
      *
      * @return all entities
      */
@@ -67,5 +67,14 @@ public interface SimpleTableDao {
      * @return true if there is no entry in the table
      */
     boolean isEmpty();
+
+    /**
+     * find by data field
+     * 
+     * @param data
+     *            the data to find
+     * @return the matching entities
+     */
+    Iterable<SimpleTable> findByData(String data);
 
 }

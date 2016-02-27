@@ -1,7 +1,7 @@
 <dataset>
   <SIMPLE_TABLE
     ID="1000"
-    DATA="one thousand" />
+    DATA="updated" />
   <SIMPLE_TABLE
     ID="1002"
     DATA="one thousand two" />

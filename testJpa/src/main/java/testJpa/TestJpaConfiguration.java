@@ -12,6 +12,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
@@ -27,6 +28,8 @@ import liquibase.integration.spring.SpringLiquibase;
 @ComponentScan(basePackages = { "testJpa" })
 public class TestJpaConfiguration {
 
+    private static final String PERSISTENCE_UNIT_NAME = "testJpa";
+
     /**
      * Post processor to translate technology specific exceptions to Spring
      * {@link DataAccessException}
@@ -39,6 +42,18 @@ public class TestJpaConfiguration {
     }
 
     /**
+     * instantiate JPA transaction manager
+     * 
+     * @return the transaction manager
+     */
+    @Bean
+    public JpaTransactionManager transactionManager() {
+        JpaTransactionManager txm = new JpaTransactionManager();
+        txm.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
+        return txm;
+    }
+
+    /**
      * Simple instantiation of a Spring Entity Manager Factory
      * 
      * @return entity manager factory bean
@@ -47,7 +62,7 @@ public class TestJpaConfiguration {
     @DependsOn("liquibase")
     public LocalContainerEntityManagerFactoryBean localEntityManagerFactoryBean() {
         LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
-        lcemfb.setPersistenceUnitName("testJpa");
+        lcemfb.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
         lcemfb.setJpaDialect(new EclipseLinkJpaDialect());
         lcemfb.setDataSource(dataSource());
         return lcemfb;

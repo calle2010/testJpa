@@ -8,6 +8,7 @@
   <properties>
   	<maven.compiler.source>1.8</maven.compiler.source>
   	<maven.compiler.target>1.8</maven.compiler.target>
+  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
   	<dependency>
@@ -77,6 +78,10 @@
   	  <groupId>com.github.springtestdbunit</groupId>
   	  <artifactId>spring-test-dbunit</artifactId>
   	  <version>1.2.1</version>
+  	</dependency>
+  	<dependency>
+  	  <groupId>commons-collections</groupId>
+  	  <artifactId>commons-collections</artifactId>
   	</dependency>
   </dependencies>
   <dependencyManagement>

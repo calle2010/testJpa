@@ -1,11 +1,11 @@
 <dataset>
+  <!-- omits the "id" column to just check the "data" column -->
   <SIMPLE_TABLE
-    ID="1000"
     DATA="one thousand" />
   <SIMPLE_TABLE
-    ID="1002"
     DATA="one thousand two" />
   <SIMPLE_TABLE
-    ID="1001"
     DATA="one thousand one" />
+  <SIMPLE_TABLE
+    DATA="new entry" />
 </dataset>
