@@ -12,7 +12,7 @@ import testJpa.simpleSpring.domain.SimpleSpring;
  * Spring's CrudRepository interface.
  */
 @Repository
-public interface SimpleSpringDao extends JpaRepository<SimpleSpring, Long> {
+public interface SimpleSpringDao extends JpaRepository<SimpleSpring, Long>, SimpleSpringDaoCustom {
 
     /**
      * save an entity
@@ -71,14 +71,6 @@ public interface SimpleSpringDao extends JpaRepository<SimpleSpring, Long> {
      */
     @Override
     boolean exists(Long id);
-
-    /**
-     * (not in CrudRepository) more efficient method than
-     * {@link SimpleSpringDao#count()} to determine if the table is empty
-     *
-     * @return true if there is no entry in the table
-     */
-    // boolean isEmpty();
 
     /**
      * find by data field

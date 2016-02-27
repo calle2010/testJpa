@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -146,16 +145,14 @@ public class SimpleSpringTest {
 
     @Test
     @DatabaseSetup("setup_SimpleSpring_empty.xml")
-    @Ignore
     public void testIsEmpty() {
-        // assertTrue(dao.isEmpty());
+        assertTrue(dao.isEmpty());
     }
 
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
-    @Ignore
     public void testisNotEmpty() {
-        // assertFalse(dao.isEmpty());
+        assertFalse(dao.isEmpty());
     }
 
     @Test

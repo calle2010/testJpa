@@ -71,19 +71,6 @@ public class TestJpaConfiguration {
     }
 
     /**
-     * Instantiate the entity manager factory. This is required for
-     * {@link JpaRepository}.
-     * 
-     * @return the entity manager factory
-     */
-    // @Bean
-    // public EntityManagerFactory entityManagerFactory() {
-    // LocalContainerEntityManagerFactoryBean lcemfb =
-    // localEntityManagerFactoryBean();
-    // return lcemfb.getNativeEntityManagerFactory();
-    // }
-
-    /**
      * data source to be used
      * 
      * @return the data source
