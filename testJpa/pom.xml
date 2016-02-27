@@ -9,4 +9,45 @@
   	<maven.compiler.source>1.8</maven.compiler.source>
   	<maven.compiler.target>1.8</maven.compiler.target>
   </properties>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.github.lbitonti</groupId>
+  		<artifactId>liquibase-hana</artifactId>
+  		<version>3.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.dbunit</groupId>
+  		<artifactId>dbunit</artifactId>
+  		<version>2.5.1</version>
+  		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.springframework</groupId>
+  		<artifactId>spring-context</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.springframework</groupId>
+  		<artifactId>spring-test</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.sap.cloud</groupId>
+  		<artifactId>neo-java-web-api</artifactId>
+  		<version>2.43.17</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.springframework</groupId>
+  		<artifactId>spring-tx</artifactId>
+  	</dependency>
+  </dependencies>
+  <dependencyManagement>
+  	<dependencies>
+  		<dependency>
+  			<groupId>io.spring.platform</groupId>
+  			<artifactId>platform-bom</artifactId>
+  			<version>2.0.2.RELEASE</version>
+  			<type>pom</type>
+  			<scope>import</scope>
+  		</dependency>
+  	</dependencies>
+  </dependencyManagement>
 </project>
