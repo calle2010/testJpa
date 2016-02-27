@@ -1,0 +1,8 @@
+<dataset>
+  <SIMPLE_SPRING
+    ID="1002"
+    DATA="one thousand two" />
+  <SIMPLE_SPRING
+    ID="1001"
+    DATA="one thousand one" />
+</dataset>

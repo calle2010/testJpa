@@ -30,4 +30,28 @@
       incrementBy="50" />
   </changeSet>
 
+  <changeSet
+    id="2"
+    author="csc">
+    <createTable tableName="SIMPLE_SPRING">
+      <column
+        name="ID"
+        type="int">
+        <constraints
+          primaryKey="true"
+          nullable="false" />
+      </column>
+      <column
+        name="DATA"
+        type="varchar(50)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createSequence
+      sequenceName="SEQ_SIMPLE_SPRING_ID"
+      startValue="50"
+      incrementBy="50" />
+  </changeSet>
+
 </databaseChangeLog>

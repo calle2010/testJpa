@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -26,6 +27,7 @@ import liquibase.integration.spring.SpringLiquibase;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = { "testJpa" })
+@EnableJpaRepositories(basePackages = { "testJpa.simpleSpring" })
 public class TestJpaConfiguration {
 
     private static final String PERSISTENCE_UNIT_NAME = "testJpa";
@@ -60,13 +62,26 @@ public class TestJpaConfiguration {
      */
     @Bean
     @DependsOn("liquibase")
-    public LocalContainerEntityManagerFactoryBean localEntityManagerFactoryBean() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
         lcemfb.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
         lcemfb.setJpaDialect(new EclipseLinkJpaDialect());
         lcemfb.setDataSource(dataSource());
         return lcemfb;
     }
+
+    /**
+     * Instantiate the entity manager factory. This is required for
+     * {@link JpaRepository}.
+     * 
+     * @return the entity manager factory
+     */
+    // @Bean
+    // public EntityManagerFactory entityManagerFactory() {
+    // LocalContainerEntityManagerFactoryBean lcemfb =
+    // localEntityManagerFactoryBean();
+    // return lcemfb.getNativeEntityManagerFactory();
+    // }
 
     /**
      * data source to be used
