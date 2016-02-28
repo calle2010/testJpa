@@ -125,6 +125,5 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
         final Query tq = em.createQuery(cq);
 
         tq.executeUpdate();
-
     }
 }

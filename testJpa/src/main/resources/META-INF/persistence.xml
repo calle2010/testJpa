@@ -14,7 +14,7 @@
         value="none" />
       <property
         name="eclipselink.logging.level"
-        value="FINEST" />
+        value="CONFIG" />
       <property
         name="eclipselink.weaving"
         value="static" />

@@ -1,8 +1,8 @@
 <dataset>
   <SIMPLE_TABLE
-    ID="1002"
+    ID="10001002"
     DATA="one thousand two" />
   <SIMPLE_TABLE
-    ID="1001"
+    ID="10001001"
     DATA="one thousand one" />
 </dataset>

@@ -85,7 +85,7 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testExists() {
-        assertTrue(dao.exists(1000l));
+        assertTrue(dao.exists(10001000l));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class SimpleTableTest {
         final List<SimpleTable> list = dao.findByData("one thousand");
 
         assertEquals(1, list.size());
-        assertEquals(1000, list.get(0).getId().longValue());
+        assertEquals(10001000, list.get(0).getId().longValue());
     }
 
     @Test
@@ -122,8 +122,8 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindById() {
-        final SimpleTable entity = dao.findOne(1000l);
-        assertEquals(1000, entity.getId().longValue());
+        final SimpleTable entity = dao.findOne(10001000l);
+        assertEquals(10001000, entity.getId().longValue());
         assertEquals("one thousand", entity.getData());
     }
 
@@ -151,12 +151,12 @@ public class SimpleTableTest {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testRemoveManaged() {
-        final SimpleTable st = dao.findOne(1000l);
+        final SimpleTable st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
 
         dao.delete(st);
 
-        assertNull("most not find deleted entity", dao.findOne(1000l));
+        assertNull("most not find deleted entity", dao.findOne(10001000l));
         assertEquals("must be one entry less", 2, dao.count());
 
     }
@@ -169,7 +169,7 @@ public class SimpleTableTest {
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testRemoveUnmanaged() {
         final SimpleTable st = new SimpleTable();
-        st.setId(1000l);
+        st.setId(10001000l);
 
         // this must fail since the entity to delete is unmanaged
         dao.delete(st);
@@ -184,7 +184,7 @@ public class SimpleTableTest {
     public void testUpdateManaged() {
         LOGGER.info("start test update managed");
 
-        final SimpleTable st = dao.findOne(1000l);
+        final SimpleTable st = dao.findOne(10001000l);
 
         st.setData("updated");
 
@@ -200,7 +200,7 @@ public class SimpleTableTest {
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final SimpleTable st = new SimpleTable();
-        st.setId(1000l);
+        st.setId(10001000l);
         st.setData("updated");
 
         dao.save(st);

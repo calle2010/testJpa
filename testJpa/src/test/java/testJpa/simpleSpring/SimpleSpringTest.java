@@ -85,7 +85,7 @@ public class SimpleSpringTest {
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
     public void testExists() {
-        assertTrue(dao.exists(1000l));
+        assertTrue(dao.exists(10001000l));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class SimpleSpringTest {
         final List<SimpleSpring> list = dao.findByData("one thousand");
 
         assertEquals(1, list.size());
-        assertEquals(1000, list.get(0).getId().longValue());
+        assertEquals(10001000, list.get(0).getId().longValue());
     }
 
     @Test
@@ -129,8 +129,8 @@ public class SimpleSpringTest {
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindById() {
-        final SimpleSpring entity = dao.findOne(1000l);
-        assertEquals(1000, entity.getId().longValue());
+        final SimpleSpring entity = dao.findOne(10001000l);
+        assertEquals(10001000, entity.getId().longValue());
         assertEquals("one thousand", entity.getData());
     }
 
@@ -158,12 +158,12 @@ public class SimpleSpringTest {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testRemoveManaged() {
-        final SimpleSpring st = dao.findOne(1000l);
+        final SimpleSpring st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
 
         dao.delete(st);
 
-        assertNull("most not find deleted entity", dao.findOne(1000l));
+        assertNull("most not find deleted entity", dao.findOne(10001000l));
         assertEquals("must be one entry less", 2, dao.count());
 
     }
@@ -176,7 +176,7 @@ public class SimpleSpringTest {
     public void testUpdateManaged() {
         LOGGER.info("start test update managed");
 
-        final SimpleSpring st = dao.findOne(1000l);
+        final SimpleSpring st = dao.findOne(10001000l);
 
         st.setData("updated");
 
@@ -192,7 +192,7 @@ public class SimpleSpringTest {
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final SimpleSpring st = new SimpleSpring();
-        st.setId(1000l);
+        st.setId(10001000l);
         st.setData("updated");
 
         dao.save(st);

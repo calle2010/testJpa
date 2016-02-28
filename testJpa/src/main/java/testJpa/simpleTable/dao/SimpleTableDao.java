@@ -80,7 +80,8 @@ public interface SimpleTableDao {
     List<SimpleTable> findByData(String data);
 
     /**
-     * Delete all entries
+     * Delete all entries with update query. This has to run in a separate
+     * transaction since the EntityManager may not be aware of the bulk updates.
      */
     void deleteAllInBatch();
 

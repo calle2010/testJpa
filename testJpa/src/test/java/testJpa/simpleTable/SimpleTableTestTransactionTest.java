@@ -61,10 +61,7 @@ public class SimpleTableTestTransactionTest {
 
         setupSimpleTable();
 
-        SimpleTable st = dao.findOne(1000l);
-        assertEquals("one thousand", st.getData());
-
-        LOGGER.info("after count");
+        assertEquals(3, dao.count());
     }
 
     /**
@@ -82,14 +79,21 @@ public class SimpleTableTestTransactionTest {
         assertTrue("transaction must be active", TestTransaction.isActive());
         assertFalse("transaction must be set to commit", TestTransaction.isFlaggedForRollback());
 
+        dao.deleteAllInBatch();
+
+        // After the bulk update a new transaction is required to ensure
+        // the entity manager is in sync with the database again.
+        TestTransaction.end();
+        TestTransaction.start();
+
         final SimpleTable st1 = new SimpleTable();
-        st1.setId(1000l);
+        st1.setId(10001000l);
         st1.setData("one thousand");
         final SimpleTable st2 = new SimpleTable();
-        st2.setId(1001l);
+        st2.setId(10001001l);
         st2.setData("one thousand one");
         final SimpleTable st3 = new SimpleTable();
-        st3.setId(1002l);
+        st3.setId(10001002l);
         st3.setData("one thousand two");
 
         dao.save(st1);
@@ -124,7 +128,7 @@ public class SimpleTableTestTransactionTest {
     public void testExists() {
         setupSimpleTable();
 
-        assertTrue(dao.exists(1000l));
+        assertTrue(dao.exists(10001000l));
     }
 
     @Test
@@ -147,7 +151,7 @@ public class SimpleTableTestTransactionTest {
         final List<SimpleTable> list = dao.findByData("one thousand");
 
         assertEquals(1, list.size());
-        assertEquals(1000, list.get(0).getId().longValue());
+        assertEquals(10001000, list.get(0).getId().longValue());
     }
 
     @Test
@@ -161,8 +165,8 @@ public class SimpleTableTestTransactionTest {
     @Test
     public void testFindById() {
         setupSimpleTable();
-        final SimpleTable entity = dao.findOne(1000l);
-        assertEquals(1000, entity.getId().longValue());
+        final SimpleTable entity = dao.findOne(10001000l);
+        assertEquals(10001000, entity.getId().longValue());
         assertEquals("one thousand", entity.getData());
     }
 
@@ -193,14 +197,14 @@ public class SimpleTableTestTransactionTest {
 
         TestTransaction.start();
 
-        final SimpleTable st = dao.findOne(1000l);
+        final SimpleTable st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
 
         dao.delete(st);
 
         endTransactionAfterUpdate();
 
-        assertNull("most not find deleted entity", dao.findOne(1000l));
+        assertNull("most not find deleted entity", dao.findOne(10001000l));
         assertEquals("must be one entry less", 2, dao.count());
 
     }
@@ -212,7 +216,7 @@ public class SimpleTableTestTransactionTest {
 
         TestTransaction.start();
 
-        final SimpleTable st = dao.findOne(1000l);
+        final SimpleTable st = dao.findOne(10001000l);
 
         st.setData("updated");
 
@@ -221,7 +225,7 @@ public class SimpleTableTestTransactionTest {
         endTransactionAfterUpdate();
         LOGGER.info("end test update managed");
 
-        assertEquals("updated", dao.findOne(1000l).getData());
+        assertEquals("updated", dao.findOne(10001000l).getData());
     }
 
     @Test
@@ -231,7 +235,7 @@ public class SimpleTableTestTransactionTest {
 
         TestTransaction.start();
 
-        final SimpleTable st = dao.findOne(1000l);
+        final SimpleTable st = dao.findOne(10001000l);
 
         st.setData("updated");
 
@@ -240,20 +244,20 @@ public class SimpleTableTestTransactionTest {
         endTransactionAfterUpdate();
         LOGGER.info("end test update managed");
 
-        assertEquals("updated", dao.findOne(1000l).getData());
+        assertEquals("updated", dao.findOne(10001000l).getData());
     }
 
     @Test
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final SimpleTable st = new SimpleTable();
-        st.setId(1000l);
+        st.setId(10001000l);
         st.setData("updated");
 
         dao.save(st);
         endTransactionAfterUpdate();
 
-        assertEquals("updated", dao.findOne(1000l).getData());
+        assertEquals("updated", dao.findOne(10001000l).getData());
         LOGGER.info("end test update unmanaged");
     }
 
