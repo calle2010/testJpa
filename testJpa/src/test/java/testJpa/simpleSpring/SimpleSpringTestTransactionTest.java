@@ -7,10 +7,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,18 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.ExpectedDatabase;
-import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import testJpa.TestJpaConfiguration;
 import testJpa.simpleSpring.dao.SimpleSpringDao;
@@ -39,8 +33,8 @@ import testJpa.simpleSpring.domain.SimpleSpring;
 /**
  * Test CRUD functionality of a simple table without relationships.
  * <p>
- * Will not roll back after tests so that JPA executes the updates and DBUnit
- * picks up the changes.
+ * Will not roll back after tests so that JPA executes the updates and a new
+ * TestTransaction can be used to verify the database contents.
  * <p>
  * All methods which update data need a @Transactional annotation together
  * with @DirtiesContext so that the entity manager etc. will be fresh for the
@@ -49,29 +43,69 @@ import testJpa.simpleSpring.domain.SimpleSpring;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestJpaConfiguration.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class })
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 @Rollback(false)
 @DirtiesContext
-public class SimpleSpringTest {
+public class SimpleSpringTestTransactionTest {
 
     @Autowired
     SimpleSpringDao dao;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSpringTest.class);
+    @PersistenceContext
+    EntityManager em;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSpringTestTransactionTest.class);
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
     public void testCount() {
-        assertEquals(3, dao.count());
+
+        setupSimpleSpring();
+
+        SimpleSpring st = dao.findOne(1000l);
+        assertEquals("one thousand", st.getData());
+
+        LOGGER.info("after count");
+    }
+
+    /**
+     * Flush and clear the entity manager to enforce database reads after the
+     * update. End the transaction.
+     */
+    private void endTransactionAfterUpdate() {
+        em.flush();
+        em.clear();
+        TestTransaction.end();
+    }
+
+    private void setupSimpleSpring() {
+
+        assertTrue("transaction must be active", TestTransaction.isActive());
+        assertFalse("transaction must be set to commit", TestTransaction.isFlaggedForRollback());
+
+        final SimpleSpring st1 = new SimpleSpring();
+        st1.setId(1000l);
+        st1.setData("one thousand");
+        final SimpleSpring st2 = new SimpleSpring();
+        st2.setId(1001l);
+        st2.setData("one thousand one");
+        final SimpleSpring st3 = new SimpleSpring();
+        st3.setId(1002l);
+        st3.setData("one thousand two");
+
+        dao.save(st1);
+        dao.save(st2);
+        dao.save(st3);
+
+        endTransactionAfterUpdate();
+
     }
 
     @Test
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DatabaseSetup("setup_SimpleSpring.xml")
-    @ExpectedDatabase(value = "expect_SimpleSpring_created.xml", table = "SIMPLE_SPRING", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @DirtiesContext
     public void testCreate() {
+        setupSimpleSpring();
+
+        TestTransaction.start();
+
         final SimpleSpring st = new SimpleSpring();
         st.setData("new entry");
 
@@ -79,37 +113,37 @@ public class SimpleSpringTest {
 
         assertNotEquals(0, stPersisted.getId().longValue());
 
+        endTransactionAfterUpdate();
+
         assertEquals(4, dao.count());
+
+        assertEquals(1, dao.findByData("new entry").size());
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
     public void testExists() {
+        setupSimpleSpring();
+
         assertTrue(dao.exists(1000l));
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
     public void testExistsFailing() {
+        setupSimpleSpring();
         assertFalse(dao.exists(999l));
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindAll() {
-        final Iterable<SimpleSpring> allEntries = dao.findAll();
-        final List<SimpleSpring> list = new ArrayList<>();
-
-        for (final SimpleSpring st : allEntries) {
-            list.add(st);
-        }
+        setupSimpleSpring();
+        final List<SimpleSpring> list = dao.findAll();
 
         assertEquals(3, list.size());
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindByData() {
+        setupSimpleSpring();
         final List<SimpleSpring> list = dao.findByData("one thousand");
 
         assertEquals(1, list.size());
@@ -117,51 +151,54 @@ public class SimpleSpringTest {
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindByDataFailing() {
-        final Iterable<SimpleSpring> entities = dao.findByData("does not exist");
+        setupSimpleSpring();
+        final List<SimpleSpring> entities = dao.findByData("does not exist");
 
-        final Iterator<SimpleSpring> ei = entities.iterator();
-
-        assertFalse(ei.hasNext());
+        assertTrue(CollectionUtils.isEmpty(entities));
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindById() {
+        setupSimpleSpring();
         final SimpleSpring entity = dao.findOne(1000l);
         assertEquals(1000, entity.getId().longValue());
         assertEquals("one thousand", entity.getData());
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindByIdFailing() {
+        setupSimpleSpring();
         assertNull(dao.findOne(999l));
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring_empty.xml")
     public void testIsEmpty() {
+        setupSimpleSpring();
+        TestTransaction.start();
+        dao.deleteAllInBatch();
+        endTransactionAfterUpdate();
         assertTrue(dao.isEmpty());
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
     public void testisNotEmpty() {
+        setupSimpleSpring();
         assertFalse(dao.isEmpty());
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
-    @ExpectedDatabase(value = "expect_SimpleSpring_deleted.xml", table = "SIMPLE_SPRING", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testRemoveManaged() {
+        setupSimpleSpring();
+
+        TestTransaction.start();
+
         final SimpleSpring st = dao.findOne(1000l);
         assertNotNull("entity to delete must not be null", st);
 
         dao.delete(st);
+
+        endTransactionAfterUpdate();
 
         assertNull("most not find deleted entity", dao.findOne(1000l));
         assertEquals("must be one entry less", 2, dao.count());
@@ -169,26 +206,44 @@ public class SimpleSpringTest {
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
-    @ExpectedDatabase(value = "expect_SimpleSpring_updated.xml", table = "SIMPLE_SPRING", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testUpdateManaged() {
         LOGGER.info("start test update managed");
+        setupSimpleSpring();
+
+        TestTransaction.start();
 
         final SimpleSpring st = dao.findOne(1000l);
 
         st.setData("updated");
 
         dao.save(st);
+
+        endTransactionAfterUpdate();
         LOGGER.info("end test update managed");
+
+        assertEquals("updated", dao.findOne(1000l).getData());
     }
 
     @Test
-    @DatabaseSetup("setup_SimpleSpring.xml")
-    @ExpectedDatabase(value = "expect_SimpleSpring_updated.xml", table = "SIMPLE_SPRING", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
+    public void testUpdateManagedWithoutMerge() {
+        LOGGER.info("start test update managed");
+        setupSimpleSpring();
+
+        TestTransaction.start();
+
+        final SimpleSpring st = dao.findOne(1000l);
+
+        st.setData("updated");
+
+        // no call to dao.save here!
+
+        endTransactionAfterUpdate();
+        LOGGER.info("end test update managed");
+
+        assertEquals("updated", dao.findOne(1000l).getData());
+    }
+
+    @Test
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final SimpleSpring st = new SimpleSpring();
@@ -196,6 +251,9 @@ public class SimpleSpringTest {
         st.setData("updated");
 
         dao.save(st);
+        endTransactionAfterUpdate();
+
+        assertEquals("updated", dao.findOne(1000l).getData());
         LOGGER.info("end test update unmanaged");
     }
 

@@ -52,6 +52,7 @@ import testJpa.simpleTable.domain.SimpleTable;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class })
 @Rollback(false)
+@DirtiesContext
 public class SimpleTableTest {
 
     @Autowired
