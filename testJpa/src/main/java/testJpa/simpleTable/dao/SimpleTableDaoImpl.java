@@ -4,8 +4,10 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -112,4 +114,17 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
         return tq.getResultList();
     }
 
+    @Override
+    public void deleteAllInBatch() {
+
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        final CriteriaDelete<SimpleTable> cq = cb.createCriteriaDelete(SimpleTable.class);
+        final Root<SimpleTable> root = cq.from(SimpleTable.class);
+
+        final Query tq = em.createQuery(cq);
+
+        tq.executeUpdate();
+
+    }
 }

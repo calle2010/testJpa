@@ -79,4 +79,9 @@ public interface SimpleTableDao {
      */
     List<SimpleTable> findByData(String data);
 
+    /**
+     * Delete all entries
+     */
+    void deleteAllInBatch();
+
 }
