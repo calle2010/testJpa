@@ -109,14 +109,10 @@ public class SimpleSpringTest {
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindByData() {
-        final Iterable<SimpleSpring> entities = dao.findByData("one thousand");
+        final List<SimpleSpring> list = dao.findByData("one thousand");
 
-        final Iterator<SimpleSpring> ei = entities.iterator();
-
-        final SimpleSpring entity = ei.next();
-
-        assertEquals(1000, entity.getId().longValue());
-        assertFalse(ei.hasNext());
+        assertEquals(1, list.size());
+        assertEquals(1000, list.get(0).getId().longValue());
     }
 
     @Test

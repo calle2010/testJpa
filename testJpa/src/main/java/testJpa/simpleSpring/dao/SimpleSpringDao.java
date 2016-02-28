@@ -1,5 +1,7 @@
 package testJpa.simpleSpring.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +21,6 @@ public interface SimpleSpringDao extends JpaRepository<SimpleSpring, Long>, Simp
      *            the data to find
      * @return the matching entities
      */
-    Iterable<SimpleSpring> findByData(String data);
+    List<SimpleSpring> findByData(String data);
 
 }
