@@ -71,10 +71,10 @@ public class SimpleSpringTest {
     @ExpectedDatabase(value = "expect_SimpleSpring_created.xml", table = "SIMPLE_SPRING", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @DirtiesContext
     public void testCreate() {
-        SimpleSpring st = new SimpleSpring();
+        final SimpleSpring st = new SimpleSpring();
         st.setData("new entry");
 
-        SimpleSpring stPersisted = dao.save(st);
+        final SimpleSpring stPersisted = dao.save(st);
 
         assertNotEquals(0, stPersisted.getId().longValue());
 
@@ -96,10 +96,10 @@ public class SimpleSpringTest {
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindAll() {
-        Iterable<SimpleSpring> allEntries = dao.findAll();
-        List<SimpleSpring> list = new ArrayList<>();
+        final Iterable<SimpleSpring> allEntries = dao.findAll();
+        final List<SimpleSpring> list = new ArrayList<>();
 
-        for (SimpleSpring st : allEntries) {
+        for (final SimpleSpring st : allEntries) {
             list.add(st);
         }
 
@@ -109,11 +109,11 @@ public class SimpleSpringTest {
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindByData() {
-        Iterable<SimpleSpring> entities = dao.findByData("one thousand");
+        final Iterable<SimpleSpring> entities = dao.findByData("one thousand");
 
-        Iterator<SimpleSpring> ei = entities.iterator();
+        final Iterator<SimpleSpring> ei = entities.iterator();
 
-        SimpleSpring entity = ei.next();
+        final SimpleSpring entity = ei.next();
 
         assertEquals(1000, entity.getId().longValue());
         assertFalse(ei.hasNext());
@@ -122,9 +122,9 @@ public class SimpleSpringTest {
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindByDataFailing() {
-        Iterable<SimpleSpring> entities = dao.findByData("does not exist");
+        final Iterable<SimpleSpring> entities = dao.findByData("does not exist");
 
-        Iterator<SimpleSpring> ei = entities.iterator();
+        final Iterator<SimpleSpring> ei = entities.iterator();
 
         assertFalse(ei.hasNext());
     }
@@ -132,7 +132,7 @@ public class SimpleSpringTest {
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
     public void testFindById() {
-        SimpleSpring entity = dao.findOne(1000l);
+        final SimpleSpring entity = dao.findOne(1000l);
         assertEquals(1000, entity.getId().longValue());
         assertEquals("one thousand", entity.getData());
     }
@@ -161,7 +161,7 @@ public class SimpleSpringTest {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testRemoveManaged() {
-        SimpleSpring st = dao.findOne(1000l);
+        final SimpleSpring st = dao.findOne(1000l);
         assertNotNull("entity to delete must not be null", st);
 
         dao.delete(st);
@@ -179,7 +179,7 @@ public class SimpleSpringTest {
     public void testUpdateManaged() {
         LOGGER.info("start test update managed");
 
-        SimpleSpring st = dao.findOne(1000l);
+        final SimpleSpring st = dao.findOne(1000l);
 
         st.setData("updated");
 
@@ -194,7 +194,7 @@ public class SimpleSpringTest {
     @DirtiesContext
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
-        SimpleSpring st = new SimpleSpring();
+        final SimpleSpring st = new SimpleSpring();
         st.setId(1000l);
         st.setData("updated");
 

@@ -35,7 +35,7 @@ public class TestJpaConfiguration {
     /**
      * Post processor to translate technology specific exceptions to Spring
      * {@link DataAccessException}
-     * 
+     *
      * @return persistence exception translation post processor"
      */
     @Bean
@@ -45,25 +45,25 @@ public class TestJpaConfiguration {
 
     /**
      * instantiate JPA transaction manager
-     * 
+     *
      * @return the transaction manager
      */
     @Bean
     public JpaTransactionManager transactionManager() {
-        JpaTransactionManager txm = new JpaTransactionManager();
+        final JpaTransactionManager txm = new JpaTransactionManager();
         txm.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
         return txm;
     }
 
     /**
      * Simple instantiation of a Spring Entity Manager Factory
-     * 
+     *
      * @return entity manager factory bean
      */
     @Bean
     @DependsOn("liquibase")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
+        final LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
         lcemfb.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
         lcemfb.setJpaDialect(new EclipseLinkJpaDialect());
         lcemfb.setDataSource(dataSource());
@@ -72,29 +72,29 @@ public class TestJpaConfiguration {
 
     /**
      * data source to be used
-     * 
+     *
      * @return the data source
      */
     @Bean
     public DataSource dataSource() {
-        DriverManagerDataSource ds = new DriverManagerDataSource();
+        final DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setUrl("jdbc:derby:memory:test-jpa;create=true");
         return ds;
     }
 
     /**
      * setup Liquibase
-     * 
+     *
      * @return the Liquibase bean
      */
     @Bean
     public SpringLiquibase liquibase() {
-        SpringLiquibase lqb = new SpringLiquibase();
+        final SpringLiquibase lqb = new SpringLiquibase();
 
         lqb.setDataSource(dataSource());
         lqb.setChangeLog("classpath:liquibase/db.changelog.xml");
 
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("verbose", "true");
         lqb.setChangeLogParameters(params);
 
@@ -104,7 +104,7 @@ public class TestJpaConfiguration {
 
     /**
      * enables @PersistenceUnit and @PersistenceContext annotations
-     * 
+     *
      * @return persistence annotation post processor
      */
     @Bean

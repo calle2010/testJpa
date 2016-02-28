@@ -71,10 +71,10 @@ public class SimpleTableTest {
     @ExpectedDatabase(value = "expect_SimpleTable_created.xml", table = "SIMPLE_TABLE", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @DirtiesContext
     public void testCreate() {
-        SimpleTable st = new SimpleTable();
+        final SimpleTable st = new SimpleTable();
         st.setData("new entry");
 
-        SimpleTable stPersisted = dao.save(st);
+        final SimpleTable stPersisted = dao.save(st);
 
         assertNotEquals(0, stPersisted.getId().longValue());
 
@@ -96,7 +96,7 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindAll() {
-        List<SimpleTable> list = dao.findAll();
+        final List<SimpleTable> list = dao.findAll();
 
         assertEquals(3, list.size());
     }
@@ -104,7 +104,7 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindByData() {
-        List<SimpleTable> list = dao.findByData("one thousand");
+        final List<SimpleTable> list = dao.findByData("one thousand");
 
         assertEquals(1, list.size());
         assertEquals(1000, list.get(0).getId().longValue());
@@ -113,7 +113,7 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindByDataFailing() {
-        List<SimpleTable> entities = dao.findByData("does not exist");
+        final List<SimpleTable> entities = dao.findByData("does not exist");
 
         assertTrue(CollectionUtils.isEmpty(entities));
     }
@@ -121,7 +121,7 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     public void testFindById() {
-        SimpleTable entity = dao.findOne(1000l);
+        final SimpleTable entity = dao.findOne(1000l);
         assertEquals(1000, entity.getId().longValue());
         assertEquals("one thousand", entity.getData());
     }
@@ -150,7 +150,7 @@ public class SimpleTableTest {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testRemoveManaged() {
-        SimpleTable st = dao.findOne(1000l);
+        final SimpleTable st = dao.findOne(1000l);
         assertNotNull("entity to delete must not be null", st);
 
         dao.delete(st);
@@ -167,7 +167,7 @@ public class SimpleTableTest {
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testRemoveUnmanaged() {
-        SimpleTable st = new SimpleTable();
+        final SimpleTable st = new SimpleTable();
         st.setId(1000l);
 
         // this must fail since the entity to delete is unmanaged
@@ -183,7 +183,7 @@ public class SimpleTableTest {
     public void testUpdateManaged() {
         LOGGER.info("start test update managed");
 
-        SimpleTable st = dao.findOne(1000l);
+        final SimpleTable st = dao.findOne(1000l);
 
         st.setData("updated");
 
@@ -198,7 +198,7 @@ public class SimpleTableTest {
     @DirtiesContext
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
-        SimpleTable st = new SimpleTable();
+        final SimpleTable st = new SimpleTable();
         st.setId(1000l);
         st.setData("updated");
 

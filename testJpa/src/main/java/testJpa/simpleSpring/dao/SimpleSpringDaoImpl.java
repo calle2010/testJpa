@@ -23,12 +23,12 @@ public class SimpleSpringDaoImpl implements SimpleSpringDaoCustom {
 
     @Override
     public boolean isEmpty() {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
 
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<SimpleSpring> root = cq.from(SimpleSpring.class);
+        final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        final Root<SimpleSpring> root = cq.from(SimpleSpring.class);
         cq.select(root.get("id"));
-        TypedQuery<Long> tq = em.createQuery(cq);
+        final TypedQuery<Long> tq = em.createQuery(cq);
         tq.setMaxResults(1);
 
         return CollectionUtils.isEmpty(tq.getResultList());

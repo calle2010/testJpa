@@ -72,7 +72,7 @@ public interface SimpleTableDao {
 
     /**
      * find by data field
-     * 
+     *
      * @param data
      *            the data to find
      * @return the matching entities

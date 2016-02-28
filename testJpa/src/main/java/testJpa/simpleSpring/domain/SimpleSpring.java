@@ -32,7 +32,7 @@ public class SimpleSpring {
      * @param id
      *            the id to set
      */
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -47,7 +47,7 @@ public class SimpleSpring {
      * @param data
      *            the data to set
      */
-    public void setData(String data) {
+    public void setData(final String data) {
         this.data = data;
     }
 

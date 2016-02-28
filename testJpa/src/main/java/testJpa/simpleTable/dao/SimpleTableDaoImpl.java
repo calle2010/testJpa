@@ -24,19 +24,19 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
     // EntityManager em;
 
     @Override
-    public SimpleTable save(SimpleTable entity) {
+    public SimpleTable save(final SimpleTable entity) {
         // EntityManager em = emf.createEntityManager();
-        SimpleTable st = em.merge(entity);
+        final SimpleTable st = em.merge(entity);
         // em.flush();
         // em.clear();
         return st;
     }
 
     @Override
-    public SimpleTable findOne(Long id) {
+    public SimpleTable findOne(final Long id) {
         // EntityManager em = emf.createEntityManager();
 
-        SimpleTable entity = em.find(SimpleTable.class, id);
+        final SimpleTable entity = em.find(SimpleTable.class, id);
 
         return entity;
     }
@@ -45,10 +45,10 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
     public List<SimpleTable> findAll() {
         // EntityManager em = emf.createEntityManager();
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<SimpleTable> cq = cb.createQuery(SimpleTable.class);
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<SimpleTable> cq = cb.createQuery(SimpleTable.class);
 
-        TypedQuery<SimpleTable> tq = em.createQuery(cq);
+        final TypedQuery<SimpleTable> tq = em.createQuery(cq);
 
         return tq.getResultList();
     }
@@ -57,25 +57,25 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
     public long count() {
         // EntityManager em = emf.createEntityManager();
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
 
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         cq.select(cb.count(cq.from(SimpleTable.class)));
 
-        TypedQuery<Long> tq = em.createQuery(cq);
+        final TypedQuery<Long> tq = em.createQuery(cq);
 
         return tq.getSingleResult();
     }
 
     @Override
-    public void delete(SimpleTable entity) {
+    public void delete(final SimpleTable entity) {
         // EntityManager em = emf.createEntityManager();
 
         em.remove(entity);
     }
 
     @Override
-    public boolean exists(Long id) {
+    public boolean exists(final Long id) {
         // EntityManager em = emf.createEntityManager();
 
         return null != em.find(SimpleTable.class, id);
@@ -86,28 +86,28 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
     public boolean isEmpty() {
         // EntityManager em = emf.createEntityManager();
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
 
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<SimpleTable> root = cq.from(SimpleTable.class);
+        final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        final Root<SimpleTable> root = cq.from(SimpleTable.class);
         cq.select(root.get("id"));
-        TypedQuery<Long> tq = em.createQuery(cq);
+        final TypedQuery<Long> tq = em.createQuery(cq);
         tq.setMaxResults(1);
 
         return CollectionUtils.isEmpty(tq.getResultList());
     }
 
     @Override
-    public List<SimpleTable> findByData(String data) {
+    public List<SimpleTable> findByData(final String data) {
         // EntityManager em = emf.createEntityManager();
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
 
-        CriteriaQuery<SimpleTable> cq = cb.createQuery(SimpleTable.class);
-        Root<SimpleTable> root = cq.from(SimpleTable.class);
+        final CriteriaQuery<SimpleTable> cq = cb.createQuery(SimpleTable.class);
+        final Root<SimpleTable> root = cq.from(SimpleTable.class);
         cq.where(cb.equal(root.get("data"), data));
 
-        TypedQuery<SimpleTable> tq = em.createQuery(cq);
+        final TypedQuery<SimpleTable> tq = em.createQuery(cq);
 
         return tq.getResultList();
     }

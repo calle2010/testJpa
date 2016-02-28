@@ -74,7 +74,7 @@ public interface SimpleSpringDao extends JpaRepository<SimpleSpring, Long>, Simp
 
     /**
      * find by data field
-     * 
+     *
      * @param data
      *            the data to find
      * @return the matching entities
