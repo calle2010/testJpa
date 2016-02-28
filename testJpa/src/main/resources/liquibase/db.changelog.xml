@@ -54,4 +54,64 @@
       incrementBy="50" />
   </changeSet>
 
+  <changeSet
+    id="3"
+    author="csc">
+    <createTable tableName="PARENT_TABLE">
+      <column
+        name="ID"
+        type="int">
+        <constraints
+          primaryKey="true"
+          nullable="false" />
+      </column>
+      <column
+        name="DATA"
+        type="varchar(50)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createSequence
+      sequenceName="SEQ_PARENT_TABLE_ID"
+      startValue="50"
+      incrementBy="50" />
+
+    <createTable tableName="CHILD_TABLE">
+      <column
+        name="ID"
+        type="int">
+        <constraints
+          primaryKey="true"
+          nullable="false" />
+      </column>
+      <column
+        name="DATA"
+        type="varchar(50)">
+        <constraints nullable="false" />
+      </column>
+      <column
+        name="PARENT_ID"
+        type="int">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint
+      constraintName="fk_child_parent"
+      referencedTableName="PARENT_TABLE"
+      baseColumnNames="PARENT_ID"
+      baseTableName="CHILD_TABLE"
+      referencedColumnNames="ID"
+      onDelete="CASCADE" />
+
+    <createSequence
+      sequenceName="SEQ_CHILD_TABLE_ID"
+      startValue="50"
+      incrementBy="50" />
+
+  </changeSet>
+
+
+
 </databaseChangeLog>
