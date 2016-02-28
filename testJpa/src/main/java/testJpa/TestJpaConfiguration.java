@@ -12,7 +12,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
@@ -62,24 +61,12 @@ public class TestJpaConfiguration {
      */
     @Bean
     @DependsOn("liquibase")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         final LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
         lcemfb.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
         lcemfb.setJpaDialect(new EclipseLinkJpaDialect());
-        lcemfb.setDataSource(dataSource());
+        lcemfb.setDataSource(dataSource);
         return lcemfb;
-    }
-
-    /**
-     * data source to be used
-     *
-     * @return the data source
-     */
-    @Bean
-    public DataSource dataSource() {
-        final DriverManagerDataSource ds = new DriverManagerDataSource();
-        ds.setUrl("jdbc:derby:memory:test-jpa;create=true");
-        return ds;
     }
 
     /**
@@ -88,10 +75,10 @@ public class TestJpaConfiguration {
      * @return the Liquibase bean
      */
     @Bean
-    public SpringLiquibase liquibase() {
+    public SpringLiquibase liquibase(DataSource dataSource) {
         final SpringLiquibase lqb = new SpringLiquibase();
 
-        lqb.setDataSource(dataSource());
+        lqb.setDataSource(dataSource);
         lqb.setChangeLog("classpath:liquibase/db.changelog.xml");
 
         final Map<String, String> params = new HashMap<>();

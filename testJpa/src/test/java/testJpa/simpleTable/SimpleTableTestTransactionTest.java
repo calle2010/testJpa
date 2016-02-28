@@ -26,7 +26,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import testJpa.TestJpaConfiguration;
+import testJpa.TestJpaTestConfiguration;
 import testJpa.simpleTable.dao.SimpleTableDao;
 import testJpa.simpleTable.domain.SimpleTable;
 
@@ -42,7 +42,7 @@ import testJpa.simpleTable.domain.SimpleTable;
  * entity manager will still have outdated entries.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestJpaConfiguration.class })
+@ContextConfiguration(classes = TestJpaTestConfiguration.class)
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 @Rollback(false)
 @DirtiesContext

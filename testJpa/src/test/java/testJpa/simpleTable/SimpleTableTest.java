@@ -32,7 +32,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import testJpa.TestJpaConfiguration;
+import testJpa.TestJpaTestConfiguration;
 import testJpa.simpleTable.dao.SimpleTableDao;
 import testJpa.simpleTable.domain.SimpleTable;
 
@@ -48,7 +48,7 @@ import testJpa.simpleTable.domain.SimpleTable;
  * entity manager will still have outdated entries.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestJpaConfiguration.class })
+@ContextConfiguration(classes = TestJpaTestConfiguration.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class })
 @Rollback(false)
