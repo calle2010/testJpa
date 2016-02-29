@@ -36,7 +36,6 @@ public class TestJpaTestConfiguration {
             // set other JDBC properties only if not Derby In-Memory test
             ds.setUsername(env.getProperty("jdbc.username"));
             ds.setPassword(env.getProperty("jdbc.password"));
-            ds.setDriverClassName(env.getProperty("jdbc.driver"));
         }
         return ds;
     }

@@ -91,6 +91,13 @@
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-jpa</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.sap.jdbc</groupId>
+      <artifactId>ngdbc</artifactId>
+      <version>1.96</version>
+      <scope>system</scope>
+      <systemPath>${com.sap.cloud.sdk.path}/repository/.archive/lib/ngdbc.jar</systemPath>
+    </dependency>
   </dependencies>
 
   <dependencyManagement>
