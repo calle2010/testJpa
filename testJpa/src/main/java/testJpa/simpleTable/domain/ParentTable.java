@@ -12,11 +12,13 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * a parent table with one-to-many "owning" relationship to child
  */
-@Entity(name = "PARENT_TABLE")
+@Entity
+@Table(name = "PARENT_TABLE")
 public class ParentTable {
 
     @Id

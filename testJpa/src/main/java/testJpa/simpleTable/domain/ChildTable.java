@@ -7,11 +7,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * a child table with many-to-one relationship to parent
  */
-@Entity(name = "CHILD_TABLE")
+@Entity
+@Table(name = "CHILD_TABLE")
 public class ChildTable {
 
     @Id

@@ -6,11 +6,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * a simple table without relationships
  */
-@Entity(name = "SIMPLE_TABLE")
+@Entity
+@Table(name = "SIMPLE_TABLE")
 public class SimpleTable {
 
     @Id
