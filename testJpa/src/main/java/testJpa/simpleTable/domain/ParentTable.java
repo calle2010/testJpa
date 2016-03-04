@@ -1,5 +1,7 @@
 package testJpa.simpleTable.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -26,7 +28,7 @@ public class ParentTable {
     private String data;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChildTable> children;
+    private List<ChildTable> children = new ArrayList<>();
 
     /**
      * @return the id
@@ -56,6 +58,32 @@ public class ParentTable {
      */
     public void setData(final String data) {
         this.data = data;
+    }
+
+    /**
+     * @return the children
+     */
+    public List<ChildTable> getChildren() {
+        return Collections.unmodifiableList(children);
+    }
+
+    /**
+     * @param child
+     *            the child to add
+     * @return true
+     */
+    public boolean addChild(ChildTable child) {
+        child.setParent(this);
+        return children.add(child);
+    }
+
+    /**
+     * @param child
+     *            the child to remove
+     * @return true if child was removed
+     */
+    public boolean removeChild(ChildTable child) {
+        return children.remove(child);
     }
 
 }

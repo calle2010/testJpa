@@ -55,4 +55,22 @@ public class ChildTable {
         this.data = data;
     }
 
+    /**
+     * @return the parent
+     */
+    public ParentTable getParent() {
+        return parent;
+    }
+
+    /**
+     * Setting the parent is package private since no user of this class but the
+     * parent is allowed to override the parent.
+     * 
+     * @param parent
+     *            the parent to set
+     */
+    void setParent(ParentTable parent) {
+        this.parent = parent;
+    }
+
 }

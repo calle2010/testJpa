@@ -1,0 +1,35 @@
+<dataset>
+  <!-- omits the "id" column -->
+  <CHILD_TABLE
+    DATA="two thousand"
+    PARENT_ID="10001000" />
+  <CHILD_TABLE
+    DATA="two thousand ten"
+    PARENT_ID="10001000" />
+  <CHILD_TABLE
+    DATA="two thousand twenty"
+    PARENT_ID="10001000" />
+  <CHILD_TABLE
+    DATA="new child"
+    PARENT_ID="10001000" />
+    
+  <CHILD_TABLE
+    DATA="two thousand two"
+    PARENT_ID="10001002" />
+  <CHILD_TABLE
+    DATA="two thousand twelve"
+    PARENT_ID="10001002" />
+  <CHILD_TABLE
+    DATA="two thousand twenty-two"
+    PARENT_ID="10001002" />
+
+  <CHILD_TABLE
+    DATA="two thousand two"
+    PARENT_ID="10001001" />
+  <CHILD_TABLE
+    DATA="two thousand eleven"
+    PARENT_ID="10001001" />
+  <CHILD_TABLE
+    DATA="two thousand twenty-one"
+    PARENT_ID="10001001" />
+</dataset>

@@ -1,0 +1,11 @@
+<dataset>
+  <!-- omits the "id" column to just check the "data" column -->
+  <PARENT_TABLE
+    DATA="one thousand" />
+  <PARENT_TABLE
+    DATA="one thousand two" />
+  <PARENT_TABLE
+    DATA="one thousand one" />
+  <PARENT_TABLE
+    DATA="new entry" />
+</dataset>
