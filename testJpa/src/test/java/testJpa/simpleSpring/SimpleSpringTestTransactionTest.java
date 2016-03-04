@@ -220,8 +220,6 @@ public class SimpleSpringTestTransactionTest {
 
         st.setData("updated");
 
-        dao.save(st);
-
         endTransactionAfterUpdate();
         LOGGER.info("end test update managed");
 

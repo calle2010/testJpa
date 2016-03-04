@@ -180,7 +180,6 @@ public class SimpleSpringTest {
 
         st.setData("updated");
 
-        dao.save(st);
         LOGGER.info("end test update managed");
     }
 

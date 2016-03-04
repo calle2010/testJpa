@@ -188,7 +188,6 @@ public class SimpleTableTest {
 
         st.setData("updated");
 
-        dao.save(st);
         LOGGER.info("end test update managed");
     }
 

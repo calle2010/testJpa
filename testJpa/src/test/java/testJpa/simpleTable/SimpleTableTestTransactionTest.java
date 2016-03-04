@@ -220,6 +220,8 @@ public class SimpleTableTestTransactionTest {
 
         st.setData("updated");
 
+        // The call to save is not needed here, but left in to show that it is
+        // also ok. See also testUpdateManagedWithoutMerge()
         dao.save(st);
 
         endTransactionAfterUpdate();
