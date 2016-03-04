@@ -1,0 +1,9 @@
+# Derby for local execution
+jdbc.url=jdbc:derby:memory:test-jpa;create=true
+#
+# remote HANA database
+# manually: ./neo.sh open-db-tunnel --account <account> --host <host> --user <user> --id <schema>
+#
+#jdbc.url=jdbc:sap://localhost:30015/?currentschema=
+#jdbc.username=
+#jdbc.password=
