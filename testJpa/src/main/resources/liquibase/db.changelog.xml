@@ -112,6 +112,63 @@
 
   </changeSet>
 
+  <changeSet
+    id="4"
+    author="csc">
+    <createTable tableName="PARENT_SPRING">
+      <column
+        name="ID"
+        type="int">
+        <constraints
+          primaryKey="true"
+          nullable="false" />
+      </column>
+      <column
+        name="DATA"
+        type="varchar(50)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createSequence
+      sequenceName="SEQ_PARENT_SPRING_ID"
+      startValue="50"
+      incrementBy="50" />
+
+    <createTable tableName="CHILD_SPRING">
+      <column
+        name="ID"
+        type="int">
+        <constraints
+          primaryKey="true"
+          nullable="false" />
+      </column>
+      <column
+        name="DATA"
+        type="varchar(50)">
+        <constraints nullable="false" />
+      </column>
+      <column
+        name="PARENT_ID"
+        type="int">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint
+      constraintName="fk_child_parent_spring"
+      referencedTableName="PARENT_SPRING"
+      baseColumnNames="PARENT_ID"
+      baseTableName="CHILD_SPRING"
+      referencedColumnNames="ID"
+      onDelete="CASCADE" />
+
+    <createSequence
+      sequenceName="SEQ_CHILD_SPRING_ID"
+      startValue="50"
+      incrementBy="50" />
+
+  </changeSet>
 
 
 </databaseChangeLog>

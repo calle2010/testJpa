@@ -4,24 +4,28 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
- * a simple table without relationships
+ * a child table with many-to-one relationship to parent
  */
 @Entity
-@Table(name = "SIMPLE_SPRING")
-public class SimpleSpring {
+@Table(name = "CHILD_SPRING")
+public class ChildSpring {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_SIMPLE_SPRING_ID")
-    @SequenceGenerator(name = "SEQ_SIMPLE_SPRING_ID", sequenceName = "SEQ_SIMPLE_SPRING_ID", allocationSize = 50, initialValue = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CHILD_SPRING_ID")
+    @SequenceGenerator(name = "SEQ_CHILD_SPRING_ID", sequenceName = "SEQ_CHILD_SPRING_ID", allocationSize = 50, initialValue = 50)
     @OrderBy
     private Long id;
 
     private String data;
+
+    @ManyToOne
+    private ParentSpring parent;
 
     /**
      * @return the id
@@ -51,6 +55,24 @@ public class SimpleSpring {
      */
     public void setData(final String data) {
         this.data = data;
+    }
+
+    /**
+     * @return the parent
+     */
+    public ParentSpring getParent() {
+        return parent;
+    }
+
+    /**
+     * Setting the parent is package private since no user of this class but the
+     * parent is allowed to override the parent.
+     * 
+     * @param parent
+     *            the parent to set
+     */
+    void setParent(ParentSpring parent) {
+        this.parent = parent;
     }
 
 }

@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 import testJpa.simpleSpring.domain.SimpleSpring;
 
 /**
- * Data access object for a simple table. The interface is modeled after
- * Spring's CrudRepository interface.
+ * Data access object for a simple table.
  */
 @Repository
 public interface SimpleSpringDao extends JpaRepository<SimpleSpring, Long>, SimpleSpringDaoCustom {

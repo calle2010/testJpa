@@ -1,0 +1,36 @@
+<dataset>
+  <CHILD_SPRING
+    ID="20001010"
+    DATA="two thousand ten"
+    PARENT_ID="10001000" />
+  <CHILD_SPRING
+    ID="20001020"
+    DATA="two thousand twenty"
+    PARENT_ID="10001000" />
+    
+  <CHILD_SPRING
+    ID="20001002"
+    DATA="two thousand two"
+    PARENT_ID="10001002" />
+  <CHILD_SPRING
+    ID="20001012"
+    DATA="two thousand twelve"
+    PARENT_ID="10001002" />
+  <CHILD_SPRING
+    ID="20001022"
+    DATA="two thousand twenty-two"
+    PARENT_ID="10001002" />
+
+  <CHILD_SPRING
+    ID="20001001"
+    DATA="two thousand two"
+    PARENT_ID="10001001" />
+  <CHILD_SPRING
+    ID="20001011"
+    DATA="two thousand eleven"
+    PARENT_ID="10001001" />
+  <CHILD_SPRING
+    ID="20001021"
+    DATA="two thousand twenty-one"
+    PARENT_ID="10001001" />
+</dataset>
