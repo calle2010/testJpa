@@ -37,7 +37,7 @@ import testJpa.simpleTable.domain.ChildTable;
 import testJpa.simpleTable.domain.ParentTable;
 
 /**
- * Test CRUD functionality of a simple table without relationships.
+ * Test CRUD functionality of a parent/child table.
  * <p>
  * Will not roll back after tests so that JPA executes the updates and DBUnit
  * picks up the changes.
@@ -229,20 +229,6 @@ public class SimpleParentTest {
     }
 
     /**
-     * Test batch fetch. See FINE logging level of EclipseLink to verify there
-     * are only two SELECTs.
-     */
-    @Test
-    @DatabaseSetup("setup_ParentTable.xml")
-    @DatabaseSetup("setup_ChildTable.xml")
-    public void testBatchFetch() {
-        final ParentTable st = dao.findOneBatchFetch(10001000l);
-
-        assertEquals(3, st.getChildren().size());
-
-    }
-
-    /**
      * Test batch fetching all parents. See FINE logging level of EclipseLink to
      * verify there are only two SELECTs.
      */
@@ -280,7 +266,14 @@ public class SimpleParentTest {
 
         assertEquals(1, st.size());
 
+        // assert children are lazily loaded, but after first access all are
+        // loaded (batch fetching).
+        boolean first = true;
         for (ParentTable pt : st) {
+            boolean childrenLoaded = emf.getPersistenceUnitUtil().isLoaded(pt, "children");
+            // either first or children are loaded
+            assert (first ^ childrenLoaded);
+            first = false;
             assertEquals(3, pt.getChildren().size());
         }
 

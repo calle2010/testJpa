@@ -134,22 +134,6 @@ public class SimpleParentDaoImpl implements SimpleParentDao {
     }
 
     @Override
-    public ParentTable findOneBatchFetch(long id) {
-
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
-
-        final CriteriaQuery<ParentTable> cq = cb.createQuery(ParentTable.class);
-        Root<ParentTable> parent = cq.from(ParentTable.class);
-        cq.where(cb.equal(parent.get("id"), id));
-
-        final TypedQuery<ParentTable> tq = em.createQuery(cq);
-        // This is EclipseLink specific. By default it creates a join fetch.
-        tq.setHint(QueryHints.BATCH, "ParentTable.children");
-
-        return tq.getSingleResult();
-    }
-
-    @Override
     public List<ParentTable> findAllBatchFetch() {
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();

@@ -5,7 +5,7 @@ import java.util.List;
 import testJpa.simpleTable.domain.ParentTable;
 
 /**
- * Data access object for a simple table. The interface is modeled after
+ * Data access object for a parent table. The interface is modeled after
  * Spring's CrudRepository interface.
  */
 public interface SimpleParentDao {
@@ -84,16 +84,6 @@ public interface SimpleParentDao {
      * transaction since the EntityManager may not be aware of the bulk updates.
      */
     void deleteAllInBatch();
-
-    /**
-     * This method will fetch the parent object and corresponding child object
-     * in two SELECTs instead of n+1.
-     * 
-     * @param l
-     * 
-     * @return the parent table entry
-     */
-    ParentTable findOneBatchFetch(long id);
 
     /**
      * This method will fetch all parent objects and corresponding child object
