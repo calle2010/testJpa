@@ -69,7 +69,7 @@ public class SimpleSpringTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DatabaseSetup("setup_SimpleSpring.xml")
-    @ExpectedDatabase(value = "expect_SimpleSpring_created.xml", table = "SIMPLE_SPRING", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_SimpleSpring_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @DirtiesContext
     public void testCreate() {
         final SimpleSpring st = new SimpleSpring();
@@ -154,7 +154,7 @@ public class SimpleSpringTest {
 
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
-    @ExpectedDatabase(value = "expect_SimpleSpring_deleted.xml", table = "SIMPLE_SPRING", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_SimpleSpring_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testRemoveManaged() {
@@ -170,7 +170,7 @@ public class SimpleSpringTest {
 
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
-    @ExpectedDatabase(value = "expect_SimpleSpring_updated.xml", table = "SIMPLE_SPRING", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_SimpleSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testUpdateManaged() {
@@ -186,7 +186,7 @@ public class SimpleSpringTest {
 
     @Test
     @DatabaseSetup("setup_SimpleSpring.xml")
-    @ExpectedDatabase(value = "expect_SimpleSpring_updated.xml", table = "SIMPLE_SPRING", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_SimpleSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testUpdateUnmanaged() {

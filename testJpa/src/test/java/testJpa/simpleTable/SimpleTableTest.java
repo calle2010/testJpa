@@ -69,7 +69,7 @@ public class SimpleTableTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DatabaseSetup("setup_SimpleTable.xml")
-    @ExpectedDatabase(value = "expect_SimpleTable_created.xml", table = "SIMPLE_TABLE", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_SimpleTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @DirtiesContext
     public void testCreate() {
         final SimpleTable st = new SimpleTable();
@@ -147,7 +147,7 @@ public class SimpleTableTest {
 
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
-    @ExpectedDatabase(value = "expect_SimpleTable_deleted.xml", table = "SIMPLE_TABLE", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_SimpleTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testRemoveManaged() {
@@ -178,7 +178,7 @@ public class SimpleTableTest {
 
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
-    @ExpectedDatabase(value = "expect_SimpleTable_updated.xml", table = "SIMPLE_TABLE", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_SimpleTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testUpdateManaged() {
@@ -194,7 +194,7 @@ public class SimpleTableTest {
 
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
-    @ExpectedDatabase(value = "expect_SimpleTable_updated.xml", table = "SIMPLE_TABLE", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_SimpleTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testUpdateUnmanaged() {
