@@ -3,13 +3,19 @@ package testJpa.simpleSpring;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnitUtil;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -56,12 +62,19 @@ import testJpa.simpleSpring.domain.ParentSpring;
 public class ParentSpringTest {
 
     @Autowired
-    ParentSpringDao dao;
+    private ParentSpringDao dao;
 
-    @Autowired
-    EntityManagerFactory emf;
+    @PersistenceContext
+    private EntityManager em;
+
+    private PersistenceUnitUtil puu;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ParentSpringTest.class);
+
+    @Before
+    public void setUp() {
+        puu = em.getEntityManagerFactory().getPersistenceUnitUtil();
+    }
 
     @Test
     @DatabaseSetup("setup_ParentSpring.xml")
@@ -78,7 +91,7 @@ public class ParentSpringTest {
         // parent record to retrieve the children (n+1). See also
         // testBatchFetch().
         for (ParentSpring pt : list) {
-            assertFalse(emf.getPersistenceUnitUtil().isLoaded(pt, "children"));
+            assertFalse(puu.isLoaded(pt, "children"));
             assertEquals(3, pt.getChildren().size());
         }
 
@@ -92,8 +105,70 @@ public class ParentSpringTest {
 
         assertEquals(1, list.size());
         assertEquals(10001000, list.get(0).getId().longValue());
-        // Assert children are (lazyly) loaded.
+        // Assert all children are lazyly loaded.
+        assertFalse(puu.isLoaded(list.get(0), "children"));
         assertEquals(3, list.get(0).getChildren().size());
+    }
+
+    @Test
+    @DatabaseSetup("setup_ParentSpring.xml")
+    @DatabaseSetup("setup_ChildSpring.xml")
+    @Transactional
+    public void testTransactional() {
+        final List<ParentSpring> list = dao.findByData("one thousand");
+
+        assertEquals(1, list.size());
+        final ParentSpring find1 = list.get(0);
+        assertEquals(10001000, find1.getId().longValue());
+
+        assertTrue("entity is managed", em.contains(find1));
+
+        // finding the same entity again yields the same object and doesn't
+        // SELECT again (cache!)
+        final ParentSpring find2 = dao.findOne(find1.getId());
+        assertSame(find1, find2);
+    }
+
+    @Test
+    @DatabaseSetup("setup_ParentSpring.xml")
+    @DatabaseSetup("setup_ChildSpring.xml")
+    public void testNonTransactional() {
+        final List<ParentSpring> list = dao.findByData("one thousand");
+
+        assertEquals(1, list.size());
+        final ParentSpring find1 = list.get(0);
+        assertEquals(10001000, find1.getId().longValue());
+
+        // entity is not managed, since no transaction context was handed to the
+        // find method
+        assertTrue("entity is not managed", !em.contains(find1));
+        // finding the same entity again yields another object, but doesn't
+        // SELECT again (cache!)
+        final ParentSpring find2 = dao.findOne(find1.getId());
+        // object is different
+        assertNotSame(find1, find2);
+        // still the properties are the same objects!
+        assertSame(find1.getData(), find2.getData());
+        assertSame(find1.getId(), find2.getId());
+
+        // children are not yet loaded (lazy loading) on both
+        assertFalse(puu.isLoaded(find1, "children"));
+        assertFalse(puu.isLoaded(find2, "children"));
+
+        // now load the children of first object
+        assertEquals(3, find1.getChildren().size());
+
+        // and assert that children are loaded on first object only
+        assertTrue(puu.isLoaded(find1, "children"));
+        assertFalse(puu.isLoaded(find2, "children"));
+
+        // now load the children on second object: No SELECT is done because of
+        // cache
+        assertEquals(3, find2.getChildren().size());
+
+        // and assert that children are loaded on second object, too
+        assertTrue(puu.isLoaded(find2, "children"));
+
     }
 
     @Test
@@ -105,7 +180,7 @@ public class ParentSpringTest {
         assertEquals(1, list.size());
         assertEquals(10001002, list.get(0).getId().longValue());
         // Assert all children are lazyly loaded.
-        assertFalse(emf.getPersistenceUnitUtil().isLoaded(list.get(0), "children"));
+        assertFalse(puu.isLoaded(list.get(0), "children"));
         assertEquals(3, list.get(0).getChildren().size());
     }
 
@@ -257,7 +332,7 @@ public class ParentSpringTest {
         // loaded (batch fetching).
         boolean first = true;
         for (ParentSpring pt : st) {
-            boolean childrenLoaded = emf.getPersistenceUnitUtil().isLoaded(pt, "children");
+            boolean childrenLoaded = puu.isLoaded(pt, "children");
             // either first or children are loaded
             assert (first ^ childrenLoaded);
             first = false;
@@ -282,7 +357,7 @@ public class ParentSpringTest {
         // loaded (batch fetching).
         boolean first = true;
         for (ParentSpring pt : st) {
-            boolean childrenLoaded = emf.getPersistenceUnitUtil().isLoaded(pt, "children");
+            boolean childrenLoaded = puu.isLoaded(pt, "children");
             // either first or children are loaded
             assert (first ^ childrenLoaded);
             first = false;
