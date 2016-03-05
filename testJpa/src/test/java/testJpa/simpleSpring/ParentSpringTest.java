@@ -99,6 +99,19 @@ public class ParentSpringTest {
     @Test
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
+    public void testFindByChildData() {
+        final List<ParentSpring> list = dao.findByChildrenDataLike("%twelve%");
+
+        assertEquals(1, list.size());
+        assertEquals(10001002, list.get(0).getId().longValue());
+        // Assert all children are lazyly loaded.
+        assertFalse(emf.getPersistenceUnitUtil().isLoaded(list.get(0), "children"));
+        assertEquals(3, list.get(0).getChildren().size());
+    }
+
+    @Test
+    @DatabaseSetup("setup_ParentSpring.xml")
+    @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "expect_ParentSpring_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_ChildSpring_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)

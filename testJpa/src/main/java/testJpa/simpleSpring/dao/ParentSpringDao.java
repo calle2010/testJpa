@@ -27,6 +27,15 @@ public interface ParentSpringDao extends JpaRepository<ParentSpring, Long> {
     List<ParentSpring> findByData(String data);
 
     /**
+     * find by data field of child
+     *
+     * @param data
+     *            the data to find
+     * @return the matching entities
+     */
+    List<ParentSpring> findByChildrenDataLike(String data);
+
+    /**
      * batch fetch children
      * 
      * @return all parents
