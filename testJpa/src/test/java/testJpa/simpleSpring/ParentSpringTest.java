@@ -105,7 +105,7 @@ public class ParentSpringTest {
 
         assertEquals(1, list.size());
         assertEquals(10001000, list.get(0).getId().longValue());
-        // Assert all children are lazyly loaded.
+        // Assert all children are lazily loaded.
         assertFalse(puu.isLoaded(list.get(0), "children"));
         assertEquals(3, list.get(0).getChildren().size());
     }
@@ -179,7 +179,7 @@ public class ParentSpringTest {
 
         assertEquals(1, list.size());
         assertEquals(10001002, list.get(0).getId().longValue());
-        // Assert all children are lazyly loaded.
+        // Assert all children are lazily loaded.
         assertFalse(puu.isLoaded(list.get(0), "children"));
         assertEquals(3, list.get(0).getChildren().size());
     }

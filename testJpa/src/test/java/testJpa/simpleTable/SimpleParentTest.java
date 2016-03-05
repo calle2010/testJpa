@@ -92,7 +92,7 @@ public class SimpleParentTest {
 
         assertEquals(1, list.size());
         assertEquals(10001000, list.get(0).getId().longValue());
-        // Assert children are (lazyly) loaded.
+        // Assert children are (lazily) loaded.
         assertEquals(3, list.get(0).getChildren().size());
     }
 
