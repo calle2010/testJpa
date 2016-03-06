@@ -3,10 +3,7 @@ package testJpa.spring.parentChild.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +35,6 @@ import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import testJpa.TestJpaTestConfiguration;
-import testJpa.spring.parentChild.dao.ParentSpringDao;
 import testJpa.spring.parentChild.domain.ChildSpring;
 import testJpa.spring.parentChild.domain.ParentSpring;
 
@@ -108,67 +104,6 @@ public class ParentSpringTest {
         // Assert all children are lazily loaded.
         assertFalse(puu.isLoaded(list.get(0), "children"));
         assertEquals(3, list.get(0).getChildren().size());
-    }
-
-    @Test
-    @DatabaseSetup("setup_ParentSpring.xml")
-    @DatabaseSetup("setup_ChildSpring.xml")
-    @Transactional
-    public void testTransactional() {
-        final List<ParentSpring> list = dao.findByData("one thousand");
-
-        assertEquals(1, list.size());
-        final ParentSpring find1 = list.get(0);
-        assertEquals(10001000, find1.getId().longValue());
-
-        assertTrue("entity is managed", em.contains(find1));
-
-        // finding the same entity again yields the same object and doesn't
-        // SELECT again (cache!)
-        final ParentSpring find2 = dao.findOne(find1.getId());
-        assertSame(find1, find2);
-    }
-
-    @Test
-    @DatabaseSetup("setup_ParentSpring.xml")
-    @DatabaseSetup("setup_ChildSpring.xml")
-    public void testNonTransactional() {
-        final List<ParentSpring> list = dao.findByData("one thousand");
-
-        assertEquals(1, list.size());
-        final ParentSpring find1 = list.get(0);
-        assertEquals(10001000, find1.getId().longValue());
-
-        // entity is not managed, since no transaction context was handed to the
-        // find method
-        assertTrue("entity is not managed", !em.contains(find1));
-        // finding the same entity again yields another object, but doesn't
-        // SELECT again (cache!)
-        final ParentSpring find2 = dao.findOne(find1.getId());
-        // object is different
-        assertNotSame(find1, find2);
-        // still the properties are the same objects!
-        assertSame(find1.getData(), find2.getData());
-        assertSame(find1.getId(), find2.getId());
-
-        // children are not yet loaded (lazy loading) on both
-        assertFalse(puu.isLoaded(find1, "children"));
-        assertFalse(puu.isLoaded(find2, "children"));
-
-        // now load the children of first object
-        assertEquals(3, find1.getChildren().size());
-
-        // and assert that children are loaded on first object only
-        assertTrue(puu.isLoaded(find1, "children"));
-        assertFalse(puu.isLoaded(find2, "children"));
-
-        // now load the children on second object: No SELECT is done because of
-        // cache
-        assertEquals(3, find2.getChildren().size());
-
-        // and assert that children are loaded on second object, too
-        assertTrue(puu.isLoaded(find2, "children"));
-
     }
 
     @Test
