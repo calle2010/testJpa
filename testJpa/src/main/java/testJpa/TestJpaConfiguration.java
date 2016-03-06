@@ -26,7 +26,7 @@ import liquibase.integration.spring.SpringLiquibase;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = { "testJpa" })
-@EnableJpaRepositories(basePackages = { "testJpa.simpleSpring" })
+@EnableJpaRepositories(basePackages = { "testJpa.spring" })
 public class TestJpaConfiguration {
 
     private static final String PERSISTENCE_UNIT_NAME = "testJpa";
@@ -55,7 +55,12 @@ public class TestJpaConfiguration {
     }
 
     /**
-     * Simple instantiation of a Spring Entity Manager Factory
+     * Simple instantiation of a Spring Entity Manager Factory. Depends on
+     * "liquibase" bean to make sure it is created after LiquiBase has setup the
+     * database schema.
+     * 
+     * @param dataSource
+     *            the data source to use
      *
      * @return entity manager factory bean
      */
@@ -71,6 +76,9 @@ public class TestJpaConfiguration {
 
     /**
      * setup Liquibase
+     * 
+     * @param dataSource
+     *            the data source to use
      *
      * @return the Liquibase bean
      */

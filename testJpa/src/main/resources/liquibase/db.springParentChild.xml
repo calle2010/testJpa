@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+  <changeSet
+    id="4"
+    author="csc">
+    <createTable tableName="PARENT_SPRING">
+      <column
+        name="ID"
+        type="int">
+        <constraints
+          primaryKey="true"
+          nullable="false" />
+      </column>
+      <column
+        name="DATA"
+        type="varchar(50)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createSequence
+      sequenceName="SEQ_PARENT_SPRING_ID"
+      startValue="50"
+      incrementBy="50" />
+
+    <createTable tableName="CHILD_SPRING">
+      <column
+        name="ID"
+        type="int">
+        <constraints
+          primaryKey="true"
+          nullable="false" />
+      </column>
+      <column
+        name="DATA"
+        type="varchar(50)">
+        <constraints nullable="false" />
+      </column>
+      <column
+        name="PARENT_ID"
+        type="int">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint
+      constraintName="fk_child_parent_spring"
+      referencedTableName="PARENT_SPRING"
+      baseColumnNames="PARENT_ID"
+      baseTableName="CHILD_SPRING"
+      referencedColumnNames="ID"
+      onDelete="CASCADE" />
+
+    <createSequence
+      sequenceName="SEQ_CHILD_SPRING_ID"
+      startValue="50"
+      incrementBy="50" />
+
+  </changeSet>
+
+</databaseChangeLog>

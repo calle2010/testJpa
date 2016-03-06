@@ -1,0 +1,11 @@
+<dataset>
+  <!-- omits the "id" column to just check the "data" column -->
+  <SPRING_TABLE
+    DATA="one thousand" />
+  <SPRING_TABLE
+    DATA="one thousand two" />
+  <SPRING_TABLE
+    DATA="one thousand one" />
+  <SPRING_TABLE
+    DATA="new entry" />
+</dataset>

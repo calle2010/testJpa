@@ -1,0 +1,8 @@
+<dataset>
+  <SPRING_TABLE
+    ID="10001002"
+    DATA="one thousand two" />
+  <SPRING_TABLE
+    ID="10001001"
+    DATA="one thousand one" />
+</dataset>
