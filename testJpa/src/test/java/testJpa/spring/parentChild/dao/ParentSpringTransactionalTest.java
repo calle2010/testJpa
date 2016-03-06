@@ -172,6 +172,9 @@ public class ParentSpringTransactionalTest {
          * minimize database accesses one should not rely on EclipseLink's
          * special functionality to read lazily loaded properties after the
          * transaction and entity manager is closed.
+         * 
+         * With EclipseLink's lazy transactions enabled end hence shared cache
+         * used this second read to parent table doesn't happen!
          */
     }
 }

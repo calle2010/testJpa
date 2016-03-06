@@ -69,7 +69,18 @@ public class TestJpaConfiguration {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         final LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
         lcemfb.setPersistenceUnitName(PERSISTENCE_UNIT_NAME);
-        lcemfb.setJpaDialect(new EclipseLinkJpaDialect());
+
+        // create EclipseLink JpaDialect
+        EclipseLinkJpaDialect elJpaDialect = new EclipseLinkJpaDialect();
+        // set lazy database transactions to true: transactions are only started
+        // when commit is required. This enables EclipseLink's shared cache, but
+        // has an impact on consistency for JDBC access to the same
+        // connection/transaction.
+        // Check EclipseLink logging level FINER too see when DB transactions
+        // are started.
+        elJpaDialect.setLazyDatabaseTransaction(true);
+
+        lcemfb.setJpaDialect(elJpaDialect);
         lcemfb.setDataSource(dataSource);
         return lcemfb;
     }
