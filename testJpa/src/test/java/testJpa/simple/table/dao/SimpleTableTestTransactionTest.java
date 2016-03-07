@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
@@ -18,35 +19,28 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import testJpa.TestJpaTestConfiguration;
-import testJpa.simple.table.dao.SimpleTableDao;
 import testJpa.simple.table.domain.SimpleTable;
 
 /**
  * Test CRUD functionality of a simple table without relationships.
  * <p>
- * Will not roll back after tests so that JPA executes the updates and a new
- * TestTransaction can be used to verify the database contents.
- * <p>
- * All methods which update data need a @Transactional annotation together
- * with @DirtiesContext so that the entity manager etc. will be fresh for the
- * next test. This is required since DBUnit will update the test data but the
- * entity manager will still have outdated entries.
+ * This class uses {@link JdbcTemplate} for database setup and verification of
+ * results. All changes are rolled back at the end of a test method.
+ * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-@Rollback(false)
-@DirtiesContext
+@Transactional
 public class SimpleTableTestTransactionTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleTableTestTransactionTest.class);
 
     @Autowired
     SimpleTableDao dao;
@@ -54,7 +48,16 @@ public class SimpleTableTestTransactionTest {
     @PersistenceContext
     EntityManager em;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleTableTestTransactionTest.class);
+    private JdbcTemplate jdbc;
+
+    /**
+     * @param dataSource
+     *            the data source to inject to the JDBC Template
+     */
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.jdbc = new JdbcTemplate(dataSource);
+    }
 
     @Test
     public void testCount() {
@@ -64,51 +67,22 @@ public class SimpleTableTestTransactionTest {
         assertEquals(3, dao.count());
     }
 
-    /**
-     * Flush and clear the entity manager to enforce database reads after the
-     * update. End the transaction.
-     */
-    private void endTransactionAfterUpdate() {
-        em.flush();
-        em.clear();
-        TestTransaction.end();
-    }
-
     private void setupSimpleTable() {
 
         assertTrue("transaction must be active", TestTransaction.isActive());
-        assertFalse("transaction must be set to commit", TestTransaction.isFlaggedForRollback());
+        assertTrue("transaction is set to rollback", TestTransaction.isFlaggedForRollback());
 
-        dao.deleteAllInBatch();
+        jdbc.update("delete from SIMPLE_TABLE");
 
-        // After the bulk update a new transaction is required to ensure
-        // the entity manager is in sync with the database again.
-        TestTransaction.end();
-        TestTransaction.start();
-
-        final SimpleTable st1 = new SimpleTable();
-        st1.setId(10001000l);
-        st1.setData("one thousand");
-        final SimpleTable st2 = new SimpleTable();
-        st2.setId(10001001l);
-        st2.setData("one thousand one");
-        final SimpleTable st3 = new SimpleTable();
-        st3.setId(10001002l);
-        st3.setData("one thousand two");
-
-        dao.save(st1);
-        dao.save(st2);
-        dao.save(st3);
-
-        endTransactionAfterUpdate();
+        jdbc.update("insert into SIMPLE_TABLE values(?, ?)", 10001000l, "one thousand");
+        jdbc.update("insert into SIMPLE_TABLE values(?, ?)", 10001002l, "one thousand two");
+        jdbc.update("insert into SIMPLE_TABLE values(?, ?)", 10001001l, "one thousand one");
 
     }
 
     @Test
     public void testCreate() {
         setupSimpleTable();
-
-        TestTransaction.start();
 
         final SimpleTable st = new SimpleTable();
         st.setData("new entry");
@@ -117,11 +91,13 @@ public class SimpleTableTestTransactionTest {
 
         assertNotEquals(0, stPersisted.getId().longValue());
 
-        endTransactionAfterUpdate();
+        // flush is required so that the EntityManager executes the SQL
+        // statements for insert
+        em.flush();
 
-        assertEquals(4, dao.count());
+        assertEquals(4, jdbc.queryForObject("select count(ID) from SIMPLE_TABLE", Integer.class));
 
-        assertEquals(1, dao.findByData("new entry").size());
+        assertEquals(1, jdbc.queryForList("select id from SIMPLE_TABLE where data = 'new entry'").size());
     }
 
     @Test
@@ -178,10 +154,9 @@ public class SimpleTableTestTransactionTest {
 
     @Test
     public void testIsEmpty() {
-        setupSimpleTable();
-        TestTransaction.start();
-        dao.deleteAllInBatch();
-        endTransactionAfterUpdate();
+        jdbc.update("delete from SIMPLE_TABLE");
+        em.clear();
+
         assertTrue(dao.isEmpty());
     }
 
@@ -195,26 +170,23 @@ public class SimpleTableTestTransactionTest {
     public void testRemoveManaged() {
         setupSimpleTable();
 
-        TestTransaction.start();
-
         final SimpleTable st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
 
         dao.delete(st);
 
-        endTransactionAfterUpdate();
+        em.flush();
 
-        assertNull("most not find deleted entity", dao.findOne(10001000l));
-        assertEquals("must be one entry less", 2, dao.count());
+        assertTrue("most not find deleted entity",
+                jdbc.queryForList("select id from SIMPLE_TABLE where id = 10001000").isEmpty());
+        assertEquals("must be one entry less", 2,
+                jdbc.queryForObject("select count(ID) from SIMPLE_TABLE", Integer.class));
 
     }
 
     @Test
     public void testUpdateManaged() {
-        LOGGER.info("start test update managed");
         setupSimpleTable();
-
-        TestTransaction.start();
 
         final SimpleTable st = dao.findOne(10001000l);
 
@@ -223,19 +195,14 @@ public class SimpleTableTestTransactionTest {
         // The call to save is not needed here, but left in to show that it is
         // also ok. See also testUpdateManagedWithoutMerge()
         dao.save(st);
+        em.flush();
 
-        endTransactionAfterUpdate();
-        LOGGER.info("end test update managed");
-
-        assertEquals("updated", dao.findOne(10001000l).getData());
+        assertEquals("updated", jdbc.queryForObject("select data from SIMPLE_TABLE where id = 10001000", String.class));
     }
 
     @Test
     public void testUpdateManagedWithoutMerge() {
-        LOGGER.info("start test update managed");
         setupSimpleTable();
-
-        TestTransaction.start();
 
         final SimpleTable st = dao.findOne(10001000l);
 
@@ -243,24 +210,21 @@ public class SimpleTableTestTransactionTest {
 
         // no call to dao.save here!
 
-        endTransactionAfterUpdate();
-        LOGGER.info("end test update managed");
+        em.flush();
 
-        assertEquals("updated", dao.findOne(10001000l).getData());
+        assertEquals("updated", jdbc.queryForObject("select data from SIMPLE_TABLE where id = 10001000", String.class));
     }
 
     @Test
     public void testUpdateUnmanaged() {
-        LOGGER.info("start test update unmanaged");
         final SimpleTable st = new SimpleTable();
         st.setId(10001000l);
         st.setData("updated");
 
         dao.save(st);
-        endTransactionAfterUpdate();
+        em.flush();
 
-        assertEquals("updated", dao.findOne(10001000l).getData());
-        LOGGER.info("end test update unmanaged");
+        assertEquals("updated", jdbc.queryForObject("select data from SIMPLE_TABLE where id = 10001000", String.class));
     }
 
 }

@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
@@ -18,35 +19,24 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import testJpa.TestJpaTestConfiguration;
-import testJpa.spring.table.dao.SpringTableDao;
 import testJpa.spring.table.domain.SpringTable;
 
 /**
  * Test CRUD functionality of a simple table without relationships.
- * <p>
- * Will not roll back after tests so that JPA executes the updates and a new
- * TestTransaction can be used to verify the database contents.
- * <p>
- * All methods which update data need a @Transactional annotation together
- * with @DirtiesContext so that the entity manager etc. will be fresh for the
- * next test. This is required since DBUnit will update the test data but the
- * entity manager will still have outdated entries.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-@Rollback(false)
-@DirtiesContext
+@Transactional
 public class SimpleSpringTestTransactionTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSpringTestTransactionTest.class);
 
     @Autowired
     SpringTableDao dao;
@@ -54,7 +44,16 @@ public class SimpleSpringTestTransactionTest {
     @PersistenceContext
     EntityManager em;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSpringTestTransactionTest.class);
+    private JdbcTemplate jdbc;
+
+    /**
+     * @param dataSource
+     *            the data source to inject to the JDBC Template
+     */
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.jdbc = new JdbcTemplate(dataSource);
+    }
 
     @Test
     public void testCount() {
@@ -64,51 +63,22 @@ public class SimpleSpringTestTransactionTest {
         assertEquals(3, dao.count());
     }
 
-    /**
-     * Flush and clear the entity manager to enforce database reads after the
-     * update. End the transaction.
-     */
-    private void endTransactionAfterUpdate() {
-        em.flush();
-        em.clear();
-        TestTransaction.end();
-    }
-
     private void setupSimpleSpring() {
 
         assertTrue("transaction must be active", TestTransaction.isActive());
-        assertFalse("transaction must be set to commit", TestTransaction.isFlaggedForRollback());
+        assertTrue("transaction is set to rollback", TestTransaction.isFlaggedForRollback());
 
-        dao.deleteAllInBatch();
+        jdbc.update("delete from SPRING_TABLE");
 
-        // After the bulk update a new transaction is required to ensure
-        // the entity manager is in sync with the database again.
-        TestTransaction.end();
-        TestTransaction.start();
-
-        final SpringTable st1 = new SpringTable();
-        st1.setId(10001000l);
-        st1.setData("one thousand");
-        final SpringTable st2 = new SpringTable();
-        st2.setId(10001001l);
-        st2.setData("one thousand one");
-        final SpringTable st3 = new SpringTable();
-        st3.setId(10001002l);
-        st3.setData("one thousand two");
-
-        dao.save(st1);
-        dao.save(st2);
-        dao.save(st3);
-
-        endTransactionAfterUpdate();
+        jdbc.update("insert into SPRING_TABLE values(?, ?)", 10001000l, "one thousand");
+        jdbc.update("insert into SPRING_TABLE values(?, ?)", 10001002l, "one thousand two");
+        jdbc.update("insert into SPRING_TABLE values(?, ?)", 10001001l, "one thousand one");
 
     }
 
     @Test
     public void testCreate() {
         setupSimpleSpring();
-
-        TestTransaction.start();
 
         final SpringTable st = new SpringTable();
         st.setData("new entry");
@@ -117,11 +87,14 @@ public class SimpleSpringTestTransactionTest {
 
         assertNotEquals(0, stPersisted.getId().longValue());
 
-        endTransactionAfterUpdate();
+        // flush is required so that the EntityManager executes the SQL
+        // statements for insert
+        em.flush();
 
-        assertEquals(4, dao.count());
+        assertEquals(4, jdbc.queryForObject("select count(ID) from SPRING_TABLE", Integer.class));
 
-        assertEquals(1, dao.findByData("new entry").size());
+        assertEquals(1, jdbc.queryForList("select id from SPRING_TABLE where data = 'new entry'").size());
+
     }
 
     @Test
@@ -178,10 +151,9 @@ public class SimpleSpringTestTransactionTest {
 
     @Test
     public void testIsEmpty() {
-        setupSimpleSpring();
-        TestTransaction.start();
-        dao.deleteAllInBatch();
-        endTransactionAfterUpdate();
+        jdbc.update("delete from SPRING_TABLE");
+        em.clear();
+
         assertTrue(dao.isEmpty());
     }
 
@@ -195,68 +167,59 @@ public class SimpleSpringTestTransactionTest {
     public void testRemoveManaged() {
         setupSimpleSpring();
 
-        TestTransaction.start();
-
         final SpringTable st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
 
         dao.delete(st);
 
-        endTransactionAfterUpdate();
+        em.flush();
 
-        assertNull("most not find deleted entity", dao.findOne(10001000l));
-        assertEquals("must be one entry less", 2, dao.count());
+        assertTrue("most not find deleted entity",
+                jdbc.queryForList("select id from SPRING_TABLE where id = 10001000").isEmpty());
+        assertEquals("must be one entry less", 2,
+                jdbc.queryForObject("select count(ID) from SPRING_TABLE", Integer.class));
 
     }
 
     @Test
     public void testUpdateManaged() {
-        LOGGER.info("start test update managed");
         setupSimpleSpring();
-
-        TestTransaction.start();
 
         final SpringTable st = dao.findOne(10001000l);
 
         st.setData("updated");
 
-        endTransactionAfterUpdate();
-        LOGGER.info("end test update managed");
+        // The call to save is not needed here, but left in to show that it is
+        // also ok. See also testUpdateManagedWithoutMerge()
+        dao.saveAndFlush(st);
 
-        assertEquals("updated", dao.findOne(10001000l).getData());
+        assertEquals("updated", jdbc.queryForObject("select data from SPRING_TABLE where id = 10001000", String.class));
     }
 
     @Test
     public void testUpdateManagedWithoutMerge() {
-        LOGGER.info("start test update managed");
         setupSimpleSpring();
-
-        TestTransaction.start();
 
         final SpringTable st = dao.findOne(10001000l);
 
         st.setData("updated");
 
         // no call to dao.save here!
+        em.flush();
 
-        endTransactionAfterUpdate();
-        LOGGER.info("end test update managed");
-
-        assertEquals("updated", dao.findOne(10001000l).getData());
+        assertEquals("updated", jdbc.queryForObject("select data from SPRING_TABLE where id = 10001000", String.class));
     }
 
     @Test
     public void testUpdateUnmanaged() {
-        LOGGER.info("start test update unmanaged");
         final SpringTable st = new SpringTable();
         st.setId(10001000l);
         st.setData("updated");
 
         dao.save(st);
-        endTransactionAfterUpdate();
+        em.flush();
 
-        assertEquals("updated", dao.findOne(10001000l).getData());
-        LOGGER.info("end test update unmanaged");
+        assertEquals("updated", jdbc.queryForObject("select data from SPRING_TABLE where id = 10001000", String.class));
     }
 
 }
