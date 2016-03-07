@@ -67,7 +67,6 @@ public class SimpleTableTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DatabaseSetup("setup_SimpleTable.xml")
     @ExpectedDatabase(value = "expect_SimpleTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testCreate() {
@@ -147,7 +146,6 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     @ExpectedDatabase(value = "expect_SimpleTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testRemoveManaged() {
 
         final SimpleTable st = dao.findOne(10001000l);
@@ -164,7 +162,6 @@ public class SimpleTableTest {
      * Test how JPA behaves in this case.
      */
     @DatabaseSetup("setup_SimpleTable.xml")
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testRemoveUnmanaged() {
         final SimpleTable st = new SimpleTable();
@@ -182,7 +179,6 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     @ExpectedDatabase(value = "expect_SimpleTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testUpdateManaged() {
         LOGGER.info("start test update managed");
 
@@ -197,7 +193,6 @@ public class SimpleTableTest {
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     @ExpectedDatabase(value = "expect_SimpleTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final SimpleTable st = new SimpleTable();

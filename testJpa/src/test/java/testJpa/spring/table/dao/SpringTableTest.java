@@ -63,7 +63,6 @@ public class SpringTableTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DatabaseSetup("setup_SpringTable.xml")
     @ExpectedDatabase(value = "expect_SpringTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testCreate() {
@@ -150,7 +149,6 @@ public class SpringTableTest {
     @Test
     @DatabaseSetup("setup_SpringTable.xml")
     @ExpectedDatabase(value = "expect_SpringTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testRemoveManaged() {
         final SpringTable st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
@@ -166,7 +164,6 @@ public class SpringTableTest {
     @Test
     @DatabaseSetup("setup_SpringTable.xml")
     @ExpectedDatabase(value = "expect_SpringTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testUpdateManaged() {
         LOGGER.info("start test update managed");
 
@@ -182,7 +179,6 @@ public class SpringTableTest {
     @Test
     @DatabaseSetup("setup_SpringTable.xml")
     @ExpectedDatabase(value = "expect_SpringTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final SpringTable st = new SpringTable();

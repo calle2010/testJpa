@@ -102,7 +102,6 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_ChildTable_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testRemoveParentManaged() {
         final ParentTable st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
@@ -119,7 +118,6 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testUpdateParentManaged() {
         LOGGER.info("start test update managed");
@@ -142,7 +140,6 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testUpdateParentUnmanaged() {
         LOGGER.info("start test update unmanaged");
@@ -180,7 +177,6 @@ public class SimpleParentTest {
     @Test(expected = UnsupportedOperationException.class)
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testRemoveChildWrong() {
         final ParentTable st = dao.findOne(10001000l);
         st.getChildren().remove(0);
@@ -194,7 +190,6 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "setup_ParentTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_ChildTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testRemoveChild() {
         final ParentTable st = dao.findOne(10001000l);
         final int numberOfChildren = st.getChildren().size();
@@ -216,7 +211,6 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "setup_ParentTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_ChildTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testCreateChild() {
         final ParentTable st = dao.findOne(10001000l);
 

@@ -115,7 +115,6 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "expect_ParentSpring_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_ChildSpring_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testRemoveParentManaged() {
         final ParentSpring st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
@@ -134,7 +133,6 @@ public class ParentSpringTest {
     // note the override=false on the second annotation. see
     // https://github.com/springtestdbunit/spring-test-dbunit/issues/64#issuecomment-193465393
     @ExpectedDatabase(value = "setup_ChildSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testUpdateParentManaged() {
         LOGGER.info("start test update managed");
 
@@ -155,7 +153,6 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "expect_ParentSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "setup_ChildSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testUpdateParentUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final ParentSpring st = new ParentSpring();
@@ -192,7 +189,6 @@ public class ParentSpringTest {
     @Test(expected = UnsupportedOperationException.class)
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testRemoveChildWrong() {
         final ParentSpring st = dao.findOne(10001000l);
         st.getChildren().remove(0);
@@ -206,7 +202,6 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "setup_ParentSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_ChildSpring_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testRemoveChild() {
         final ParentSpring st = dao.findOne(10001000l);
         final int numberOfChildren = st.getChildren().size();
@@ -228,7 +223,6 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "setup_ParentSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_ChildSpring_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void testCreateChild() {
         final ParentSpring st = dao.findOne(10001000l);
 
