@@ -12,7 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnitUtil;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -24,7 +23,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
@@ -49,19 +47,25 @@ import testJpa.simple.parentChild.domain.ParentTable;
 @Transactional
 public class SimpleParentTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleParentTest.class);
+
     @Autowired
     SimpleParentDao dao;
 
-    @PersistenceContext
-    EntityManager em;
-
     private PersistenceUnitUtil puu;
+    private EntityManager em;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleParentTest.class);
-
-    @Before
-    public void setUp() {
-        puu = em.getEntityManagerFactory().getPersistenceUnitUtil();
+    /**
+     * Inject entity manager and persistence unit utility
+     * 
+     * @param em
+     *            the entity manager
+     * 
+     */
+    @PersistenceContext
+    public void setEntityManager(EntityManager em) {
+        this.em = em;
+        this.puu = em.getEntityManagerFactory().getPersistenceUnitUtil();
     }
 
     @Test

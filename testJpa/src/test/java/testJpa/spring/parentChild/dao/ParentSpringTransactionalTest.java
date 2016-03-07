@@ -12,11 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnitUtil;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.EntityManagerProxy;
 import org.springframework.test.annotation.Rollback;
@@ -47,20 +44,25 @@ import testJpa.spring.parentChild.domain.ParentSpring;
         DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class })
 @Rollback(false)
 public class ParentSpringTransactionalTest {
-    private PersistenceUnitUtil puu;
 
     @Autowired
     private ParentSpringDao dao;
 
-    @PersistenceContext
+    private PersistenceUnitUtil puu;
     private EntityManager em;
 
-    @Before
-    public void setUp() {
-        puu = em.getEntityManagerFactory().getPersistenceUnitUtil();
+    /**
+     * Inject entity manager and persistence unit utility
+     * 
+     * @param em
+     *            the entity manager
+     * 
+     */
+    @PersistenceContext
+    public void setEntityManager(EntityManager em) {
+        this.em = em;
+        this.puu = em.getEntityManagerFactory().getPersistenceUnitUtil();
     }
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ParentSpringTransactionalTest.class);
 
     /**
      * Test aspects of transactions, caching, and lazy loading
