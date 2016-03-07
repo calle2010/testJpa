@@ -18,18 +18,15 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
@@ -52,9 +49,7 @@ import testJpa.spring.parentChild.domain.ParentSpring;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class })
-@Rollback(false)
-@DirtiesContext
+        TransactionDbUnitTestExecutionListener.class })
 public class ParentSpringTest {
 
     @Autowired
@@ -123,9 +118,8 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "expect_ParentSpring_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildSpring_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_ChildSpring_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testRemoveParentManaged() {
         final ParentSpring st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
@@ -141,9 +135,10 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "expect_ParentSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "setup_ChildSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    // note the override=false on the second annotation. see
+    // https://github.com/springtestdbunit/spring-test-dbunit/issues/64#issuecomment-193465393
+    @ExpectedDatabase(value = "setup_ChildSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testUpdateParentManaged() {
         LOGGER.info("start test update managed");
 
@@ -151,6 +146,7 @@ public class ParentSpringTest {
 
         st.setData("updated");
 
+        em.flush();
         LOGGER.info("end test update managed");
     }
 
@@ -162,9 +158,8 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "expect_ParentSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "setup_ChildSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "setup_ChildSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testUpdateParentUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final ParentSpring st = new ParentSpring();
@@ -190,6 +185,7 @@ public class ParentSpringTest {
         st.addChild(ct3);
 
         dao.save(st);
+        em.flush();
         LOGGER.info("end test update unmanaged");
     }
 
@@ -201,7 +197,6 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testRemoveChildWrong() {
         final ParentSpring st = dao.findOne(10001000l);
         st.getChildren().remove(0);
@@ -214,9 +209,8 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "setup_ParentSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildSpring_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_ChildSpring_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testRemoveChild() {
         final ParentSpring st = dao.findOne(10001000l);
         final int numberOfChildren = st.getChildren().size();
@@ -226,6 +220,8 @@ public class ParentSpringTest {
         st.removeChild(ct.get());
 
         assertEquals(numberOfChildren - 1, st.getChildren().size());
+
+        em.flush();
     }
 
     /**
@@ -235,9 +231,8 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "setup_ParentSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildSpring_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_ChildSpring_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testCreateChild() {
         final ParentSpring st = dao.findOne(10001000l);
 
@@ -249,6 +244,8 @@ public class ParentSpringTest {
          * ensure consistency.
          */
         st.addChild(newChild);
+
+        em.flush();
     }
 
     /**

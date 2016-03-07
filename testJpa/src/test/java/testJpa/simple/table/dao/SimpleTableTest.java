@@ -9,31 +9,32 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.apache.commons.collections.CollectionUtils;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import testJpa.TestJpaTestConfiguration;
-import testJpa.simple.table.dao.SimpleTableDao;
 import testJpa.simple.table.domain.SimpleTable;
 
 /**
@@ -48,15 +49,17 @@ import testJpa.simple.table.domain.SimpleTable;
  * entity manager will still have outdated entries.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class })
-@Rollback(false)
-@DirtiesContext
+        TransactionDbUnitTestExecutionListener.class })
 public class SimpleTableTest {
 
     @Autowired
-    SimpleTableDao dao;
+    private SimpleTableDao dao;
+
+    @PersistenceContext
+    private EntityManager em;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleTableTest.class);
 
@@ -70,7 +73,6 @@ public class SimpleTableTest {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DatabaseSetup("setup_SimpleTable.xml")
     @ExpectedDatabase(value = "expect_SimpleTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @DirtiesContext
     public void testCreate() {
         final SimpleTable st = new SimpleTable();
         st.setData("new entry");
@@ -149,8 +151,8 @@ public class SimpleTableTest {
     @DatabaseSetup("setup_SimpleTable.xml")
     @ExpectedDatabase(value = "expect_SimpleTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testRemoveManaged() {
+
         final SimpleTable st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
 
@@ -162,31 +164,35 @@ public class SimpleTableTest {
     }
 
     /**
-     * Test how JPA behaves in this case. @Transactional and SpringDBUnit
-     * annotations will change the expected exception result:
-     * InvalidDataAccessApiUsageException.
+     * Test how JPA behaves in this case.
      */
+    @DatabaseSetup("setup_SimpleTable.xml")
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testRemoveUnmanaged() {
         final SimpleTable st = new SimpleTable();
         st.setId(10001000l);
 
         // this must fail since the entity to delete is unmanaged
-        dao.delete(st);
-
+        try {
+            dao.delete(st);
+        } catch (Exception up) {
+            LOGGER.error(up.getMessage());
+            throw up;
+        }
     }
 
     @Test
     @DatabaseSetup("setup_SimpleTable.xml")
     @ExpectedDatabase(value = "expect_SimpleTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testUpdateManaged() {
         LOGGER.info("start test update managed");
 
         final SimpleTable st = dao.findOne(10001000l);
 
         st.setData("updated");
+        em.flush();
 
         LOGGER.info("end test update managed");
     }
@@ -195,7 +201,6 @@ public class SimpleTableTest {
     @DatabaseSetup("setup_SimpleTable.xml")
     @ExpectedDatabase(value = "expect_SimpleTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final SimpleTable st = new SimpleTable();
@@ -203,6 +208,7 @@ public class SimpleTableTest {
         st.setData("updated");
 
         dao.save(st);
+        em.flush();
         LOGGER.info("end test update unmanaged");
     }
 

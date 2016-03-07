@@ -8,25 +8,26 @@ import static org.junit.Assert.assertNull;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnitUtil;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
@@ -49,18 +50,23 @@ import testJpa.simple.parentChild.domain.ParentTable;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class })
-@Rollback(false)
-@DirtiesContext
+        TransactionDbUnitTestExecutionListener.class })
 public class SimpleParentTest {
 
     @Autowired
     SimpleParentDao dao;
 
-    @Autowired
-    EntityManagerFactory emf;
+    @PersistenceContext
+    EntityManager em;
+
+    private PersistenceUnitUtil puu;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleParentTest.class);
+
+    @Before
+    public void setUp() {
+        puu = em.getEntityManagerFactory().getPersistenceUnitUtil();
+    }
 
     @Test
     @DatabaseSetup("setup_ParentTable.xml")
@@ -77,7 +83,7 @@ public class SimpleParentTest {
         // parent record to retrieve the children (n+1). See also
         // testBatchFetch().
         for (ParentTable pt : list) {
-            assertFalse(emf.getPersistenceUnitUtil().isLoaded(pt, "children"));
+            assertFalse(puu.isLoaded(pt, "children"));
             assertEquals(3, pt.getChildren().size());
         }
 
@@ -99,9 +105,8 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildTable_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_ChildTable_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testRemoveParentManaged() {
         final ParentTable st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
@@ -117,7 +122,7 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testUpdateParentManaged() {
@@ -126,6 +131,8 @@ public class SimpleParentTest {
         final ParentTable st = dao.findOne(10001000l);
 
         st.setData("updated");
+
+        em.flush();
 
         LOGGER.info("end test update managed");
     }
@@ -138,7 +145,7 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DirtiesContext
     public void testUpdateParentUnmanaged() {
@@ -166,6 +173,7 @@ public class SimpleParentTest {
         st.addChild(ct3);
 
         dao.save(st);
+        em.flush();
         LOGGER.info("end test update unmanaged");
     }
 
@@ -177,7 +185,6 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testRemoveChildWrong() {
         final ParentTable st = dao.findOne(10001000l);
         st.getChildren().remove(0);
@@ -190,9 +197,8 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "setup_ParentTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_ChildTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testRemoveChild() {
         final ParentTable st = dao.findOne(10001000l);
         final int numberOfChildren = st.getChildren().size();
@@ -202,6 +208,8 @@ public class SimpleParentTest {
         st.removeChild(ct.get());
 
         assertEquals(numberOfChildren - 1, st.getChildren().size());
+
+        em.flush();
     }
 
     /**
@@ -211,9 +219,8 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "setup_ParentTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_ChildTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testCreateChild() {
         final ParentTable st = dao.findOne(10001000l);
 
@@ -225,6 +232,7 @@ public class SimpleParentTest {
          * ensure consistency.
          */
         st.addChild(newChild);
+        em.flush();
     }
 
     /**
@@ -243,7 +251,7 @@ public class SimpleParentTest {
         // loaded (batch fetching).
         boolean first = true;
         for (ParentTable pt : st) {
-            boolean childrenLoaded = emf.getPersistenceUnitUtil().isLoaded(pt, "children");
+            boolean childrenLoaded = puu.isLoaded(pt, "children");
             // either first or children are loaded
             assert (first ^ childrenLoaded);
             first = false;
@@ -269,7 +277,7 @@ public class SimpleParentTest {
         // loaded (batch fetching).
         boolean first = true;
         for (ParentTable pt : st) {
-            boolean childrenLoaded = emf.getPersistenceUnitUtil().isLoaded(pt, "children");
+            boolean childrenLoaded = puu.isLoaded(pt, "children");
             // either first or children are loaded
             assert (first ^ childrenLoaded);
             first = false;

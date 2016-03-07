@@ -11,29 +11,28 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import testJpa.TestJpaTestConfiguration;
-import testJpa.spring.table.dao.SpringTableDao;
 import testJpa.spring.table.domain.SpringTable;
 
 /**
@@ -50,13 +49,14 @@ import testJpa.spring.table.domain.SpringTable;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-        DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class })
-@Rollback(false)
-@DirtiesContext
+        TransactionDbUnitTestExecutionListener.class })
 public class SpringTableTest {
 
     @Autowired
     SpringTableDao dao;
+
+    @PersistenceContext
+    EntityManager em;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpringTableTest.class);
 
@@ -70,7 +70,6 @@ public class SpringTableTest {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @DatabaseSetup("setup_SpringTable.xml")
     @ExpectedDatabase(value = "expect_SpringTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @DirtiesContext
     public void testCreate() {
         final SpringTable st = new SpringTable();
         st.setData("new entry");
@@ -156,7 +155,6 @@ public class SpringTableTest {
     @DatabaseSetup("setup_SpringTable.xml")
     @ExpectedDatabase(value = "expect_SpringTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testRemoveManaged() {
         final SpringTable st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
@@ -166,19 +164,21 @@ public class SpringTableTest {
         assertNull("most not find deleted entity", dao.findOne(10001000l));
         assertEquals("must be one entry less", 2, dao.count());
 
+        em.flush();
     }
 
     @Test
     @DatabaseSetup("setup_SpringTable.xml")
     @ExpectedDatabase(value = "expect_SpringTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testUpdateManaged() {
         LOGGER.info("start test update managed");
 
         final SpringTable st = dao.findOne(10001000l);
 
         st.setData("updated");
+
+        em.flush();
 
         LOGGER.info("end test update managed");
     }
@@ -187,7 +187,6 @@ public class SpringTableTest {
     @DatabaseSetup("setup_SpringTable.xml")
     @ExpectedDatabase(value = "expect_SpringTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    @DirtiesContext
     public void testUpdateUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final SpringTable st = new SpringTable();
@@ -195,6 +194,7 @@ public class SpringTableTest {
         st.setData("updated");
 
         dao.save(st);
+        em.flush();
         LOGGER.info("end test update unmanaged");
     }
 
