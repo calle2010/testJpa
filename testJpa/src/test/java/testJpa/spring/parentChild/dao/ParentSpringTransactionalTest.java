@@ -174,7 +174,7 @@ public class ParentSpringTransactionalTest {
          * transaction and entity manager is closed.
          * 
          * With EclipseLink's lazy transactions enabled end hence shared cache
-         * used this second read to parent table doesn't happen!
+         * mode enabled this second read to parent table doesn't happen!
          */
     }
 }

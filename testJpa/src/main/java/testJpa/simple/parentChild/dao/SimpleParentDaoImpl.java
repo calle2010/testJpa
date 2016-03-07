@@ -23,31 +23,20 @@ public class SimpleParentDaoImpl implements SimpleParentDao {
     @PersistenceContext
     EntityManager em;
 
-    // @PersistenceContext
-    // EntityManager em;
-
     @Override
     public ParentTable save(final ParentTable entity) {
-        // EntityManager em = emf.createEntityManager();
-        final ParentTable st = em.merge(entity);
-        // em.flush();
-        // em.clear();
-        return st;
+
+        return em.merge(entity);
     }
 
     @Override
     public ParentTable findOne(final Long id) {
-        // EntityManager em = emf.createEntityManager();
 
-        final ParentTable entity = em.find(ParentTable.class, id);
-
-        return entity;
+        return em.find(ParentTable.class, id);
     }
 
     @Override
     public List<ParentTable> findAll() {
-        // EntityManager em = emf.createEntityManager();
-
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<ParentTable> cq = cb.createQuery(ParentTable.class);
 
@@ -58,7 +47,6 @@ public class SimpleParentDaoImpl implements SimpleParentDao {
 
     @Override
     public long count() {
-        // EntityManager em = emf.createEntityManager();
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -72,14 +60,12 @@ public class SimpleParentDaoImpl implements SimpleParentDao {
 
     @Override
     public void delete(final ParentTable entity) {
-        // EntityManager em = emf.createEntityManager();
 
         em.remove(entity);
     }
 
     @Override
     public boolean exists(final Long id) {
-        // EntityManager em = emf.createEntityManager();
 
         return null != em.find(ParentTable.class, id);
 
@@ -87,7 +73,6 @@ public class SimpleParentDaoImpl implements SimpleParentDao {
 
     @Override
     public boolean isEmpty() {
-        // EntityManager em = emf.createEntityManager();
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -102,7 +87,6 @@ public class SimpleParentDaoImpl implements SimpleParentDao {
 
     @Override
     public List<ParentTable> findByData(final String data) {
-        // EntityManager em = emf.createEntityManager();
 
         final TypedQuery<ParentTable> tq = createDataQuery(data);
 
