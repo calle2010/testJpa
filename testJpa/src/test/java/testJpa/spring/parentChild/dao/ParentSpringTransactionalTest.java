@@ -36,7 +36,9 @@ import testJpa.TestJpaTestConfiguration;
 import testJpa.spring.parentChild.domain.ParentSpring;
 
 /**
- * test specific aspects of transaction and lazy loading
+ * Test specific aspects of transaction and lazy loading.
+ * <p>
+ * Changes are NOT rolled back after execution!
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)

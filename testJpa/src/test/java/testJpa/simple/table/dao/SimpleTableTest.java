@@ -40,19 +40,16 @@ import testJpa.simple.table.domain.SimpleTable;
 /**
  * Test CRUD functionality of a simple table without relationships.
  * <p>
- * Will not roll back after tests so that JPA executes the updates and DBUnit
- * picks up the changes.
- * <p>
- * All methods which update data need a @Transactional annotation together
- * with @DirtiesContext so that the entity manager etc. will be fresh for the
- * next test. This is required since DBUnit will update the test data but the
- * entity manager will still have outdated entries.
+ * This class uses DBUnit for database setup and verification of results. All
+ * changes are rolled back at the end of a test method.
+ * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         TransactionDbUnitTestExecutionListener.class })
+@Transactional
 public class SimpleTableTest {
 
     @Autowired
