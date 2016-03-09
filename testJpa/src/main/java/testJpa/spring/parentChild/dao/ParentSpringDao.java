@@ -48,6 +48,8 @@ public interface ParentSpringDao extends JpaRepository<ParentSpring, Long> {
     /**
      * batch fetch children
      * 
+     * @param data
+     * 
      * @return parents matching data
      */
     @Query("select ps from ParentSpring ps where ps.data = ?1")

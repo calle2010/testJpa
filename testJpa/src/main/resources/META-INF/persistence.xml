@@ -18,6 +18,9 @@
       <property
         name="eclipselink.weaving"
         value="static" />
+      <property
+        name="eclipselink.jdbc.batch-writing"
+        value="JDBC"></property>
     </properties>
   </persistence-unit>
 </persistence>
