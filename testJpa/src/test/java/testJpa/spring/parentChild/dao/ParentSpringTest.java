@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -254,16 +255,15 @@ public class ParentSpringTest {
 
         assertEquals(3, st.size());
 
-        // assert children are lazily loaded, but after first access all are
-        // loaded (batch fetching).
-        boolean first = true;
+        // Assert children are lazily loaded for each parent record. But in
+        // EclipseLink logging all children are loaded with one select.
+        // Internally
+        // EclipseLink stores the batch query results in session.batchQueries
+        // before they are used for lazy loading in next iteration.
         for (ParentSpring pt : st) {
-            boolean childrenLoaded = puu.isLoaded(pt, "children");
-            // either first or children are loaded
-            assert (first ^ childrenLoaded);
-            first = false;
-
+            assertFalse("children are not yet loaded", puu.isLoaded(pt, "children"));
             assertEquals(3, pt.getChildren().size());
+            assertTrue("children are now loaded", puu.isLoaded(pt, "children"));
         }
 
     }
@@ -279,15 +279,15 @@ public class ParentSpringTest {
         final List<ParentSpring> st = dao.findByDataBatchFetch("one thousand");
         assertEquals(1, st.size());
 
-        // assert children are lazily loaded, but after first access all are
-        // loaded (batch fetching).
-        boolean first = true;
+        // Assert children are lazily loaded for each parent record. But in
+        // EclipseLink logging all children are loaded with one select.
+        // Internally
+        // EclipseLink stores the batch query results in session.batchQueries
+        // before they are used for lazy loading in next iteration.
         for (ParentSpring pt : st) {
-            boolean childrenLoaded = puu.isLoaded(pt, "children");
-            // either first or children are loaded
-            assert (first ^ childrenLoaded);
-            first = false;
+            assertFalse("children are not yet loaded", puu.isLoaded(pt, "children"));
             assertEquals(3, pt.getChildren().size());
+            assertTrue("children are now loaded", puu.isLoaded(pt, "children"));
         }
 
     }

@@ -33,7 +33,7 @@ import testJpa.spring.table.domain.SpringTable;
  * <p>
  * This class uses {@link JdbcTemplate} for database setup and verification of
  * results. All changes are rolled back at the end of a test method.
-
+ * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
@@ -95,7 +95,7 @@ public class SimpleSpringJdbcTemplateTest {
         // statements for insert
         em.flush();
 
-        assertEquals(4, jdbc.queryForObject("select count(ID) from SPRING_TABLE", Integer.class));
+        assertEquals(Long.valueOf(4), jdbc.queryForObject("select count(ID) from SPRING_TABLE", Long.class));
 
         assertEquals(1, jdbc.queryForList("select id from SPRING_TABLE where data = 'new entry'").size());
 
@@ -180,8 +180,8 @@ public class SimpleSpringJdbcTemplateTest {
 
         assertTrue("most not find deleted entity",
                 jdbc.queryForList("select id from SPRING_TABLE where id = 10001000").isEmpty());
-        assertEquals("must be one entry less", 2,
-                jdbc.queryForObject("select count(ID) from SPRING_TABLE", Integer.class));
+        assertEquals("must be one entry less", Long.valueOf(2),
+                jdbc.queryForObject("select count(ID) from SPRING_TABLE", Long.class));
 
     }
 

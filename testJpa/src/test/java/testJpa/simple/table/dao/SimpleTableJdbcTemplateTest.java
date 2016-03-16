@@ -95,7 +95,7 @@ public class SimpleTableJdbcTemplateTest {
         // statements for insert
         em.flush();
 
-        assertEquals(4, jdbc.queryForObject("select count(ID) from SIMPLE_TABLE", Integer.class));
+        assertEquals(Long.valueOf(4), jdbc.queryForObject("select count(ID) from SIMPLE_TABLE", Long.class));
 
         assertEquals(1, jdbc.queryForList("select id from SIMPLE_TABLE where data = 'new entry'").size());
     }
@@ -179,8 +179,8 @@ public class SimpleTableJdbcTemplateTest {
 
         assertTrue("most not find deleted entity",
                 jdbc.queryForList("select id from SIMPLE_TABLE where id = 10001000").isEmpty());
-        assertEquals("must be one entry less", 2,
-                jdbc.queryForObject("select count(ID) from SIMPLE_TABLE", Integer.class));
+        assertEquals("must be one entry less", Long.valueOf(2),
+                jdbc.queryForObject("select count(ID) from SIMPLE_TABLE", Long.class));
 
     }
 
