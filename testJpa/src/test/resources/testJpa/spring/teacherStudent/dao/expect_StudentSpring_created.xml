@@ -1,0 +1,15 @@
+<dataset>
+  <!-- omits the "id" column -->
+  <STUDENT_SPRING DATA="two thousand" />
+  <STUDENT_SPRING DATA="two thousand ten" />
+  <STUDENT_SPRING DATA="two thousand twenty" />
+  <STUDENT_SPRING DATA="new entry" />
+
+  <STUDENT_SPRING DATA="two thousand two" />
+  <STUDENT_SPRING DATA="two thousand twelve" />
+  <STUDENT_SPRING DATA="two thousand twenty-two" />
+
+  <STUDENT_SPRING DATA="two thousand one" />
+  <STUDENT_SPRING DATA="two thousand eleven" />
+  <STUDENT_SPRING DATA="two thousand twenty-one" />
+</dataset>

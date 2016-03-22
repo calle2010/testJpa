@@ -1,0 +1,11 @@
+<dataset>
+  <!-- omits the "id" column to just check the "data" column -->
+  <TEACHER_SPRING
+    DATA="one thousand" />
+  <TEACHER_SPRING
+    DATA="one thousand two" />
+  <TEACHER_SPRING
+    DATA="one thousand one" />
+  <TEACHER_SPRING
+    DATA="new entry" />
+</dataset>
