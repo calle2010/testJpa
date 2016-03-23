@@ -12,6 +12,8 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * A student table with many-to-many relationship to teachers.
  */
@@ -67,6 +69,11 @@ public class StudentSpring {
      */
     public List<TeacherSpring> getTeachers() {
         return Collections.unmodifiableList(teachers);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
 }
