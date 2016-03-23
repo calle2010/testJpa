@@ -10,6 +10,7 @@ import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ import testJpa.spring.table.domain.SpringTable;
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
 @Transactional
 @Commit
+@Ignore("do not run with loggers enabled")
 public class SimpleSpringPerformanceTest {
 
     private static final int SO_MANY = 100000;

@@ -24,7 +24,7 @@
     PARENT_ID="10001002" />
 
   <CHILD_TABLE
-    DATA="two thousand two"
+    DATA="two thousand one"
     PARENT_ID="10001001" />
   <CHILD_TABLE
     DATA="two thousand eleven"
