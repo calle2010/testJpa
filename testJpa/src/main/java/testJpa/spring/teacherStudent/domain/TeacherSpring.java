@@ -91,4 +91,15 @@ public class TeacherSpring {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
+    /**
+     * Remove the student from this teacher. This is package private since it
+     * doesn't take care of the inverse relationship.
+     * 
+     * @param student
+     *            the student to remove
+     */
+    void removeStudentInternal(StudentSpring student) {
+        students.remove(student);
+    }
 }

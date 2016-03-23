@@ -140,4 +140,40 @@ public class TeacherStudentSpringTest {
 
         em.flush();
     }
+
+    @Test
+    @DatabaseSetup("setup_TeacherSpring.xml")
+    @DatabaseSetup("setup_StudentSpring.xml")
+    @DatabaseSetup("setup_TeacherStudent.xml")
+    @ExpectedDatabase(value = "setup_TeacherSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "setup_StudentSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_TeacherStudent_deleted.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    public void testRemoveTeacherFromStudent() {
+        // get a student with one teacher
+        StudentSpring student = studentDao.findOne(20001000l);
+
+        List<TeacherSpring> teachers = student.getTeachers();
+
+        int numOfTeachers = teachers.size();
+        assertThat("teacher shall have relation to student", teachers.get(0), hasProperty("id", is(10001000l)));
+
+        // get the teacher through the DAO: it is the same instance and has the
+        // inverse relationship
+        TeacherSpring teacher = teacherDao.findOne(teachers.get(0).getId());
+        assertThat(teacher, sameInstance(teachers.get(0)));
+        assertThat("teacher shall have relation to student", teacher.getStudents(),
+                hasItem(hasProperty("id", is(student.getId()))));
+
+        // remove the student from the teacher
+        assertTrue(student.removeTeacher(teacher));
+
+        // ensure the student's got one teacher less
+        assertThat(student.getTeachers(), hasSize(numOfTeachers - 1));
+
+        // ensure the student is removed from the teacher
+        assertThat("teacher shall have no relation to student", teacher.getStudents(),
+                not(hasItem(hasProperty("id", is(student.getId())))));
+
+        em.flush();
+    }
 }

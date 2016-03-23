@@ -86,4 +86,17 @@ public class StudentSpring {
         teachers.remove(teacher);
     }
 
+    /**
+     * remove teacher from student and take care of the bidirectional
+     * relationship.
+     * 
+     * @param teacher
+     *            the teacher to remove
+     * @return true if the teacher was related to this student
+     */
+    public boolean removeTeacher(TeacherSpring teacher) {
+        teacher.removeStudentInternal(this);
+        return teachers.remove(teacher);
+    }
+
 }
