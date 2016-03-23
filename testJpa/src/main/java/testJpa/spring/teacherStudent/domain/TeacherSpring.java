@@ -74,6 +74,19 @@ public class TeacherSpring {
         return Collections.unmodifiableList(students);
     }
 
+    /**
+     * Remove student from teacher. Takes care of the bidirectional relationship
+     * as well.
+     * 
+     * @param student
+     *            the student to remove
+     * @return true if student was contained in the relationship
+     */
+    public boolean removeStudent(StudentSpring student) {
+        student.removeTeacherInternal(this);
+        return students.remove(student);
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
