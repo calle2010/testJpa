@@ -111,7 +111,7 @@ public class TeacherStudentSpringTest {
     @DatabaseSetup("setup_TeacherStudent.xml")
     @ExpectedDatabase(value = "setup_TeacherSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "setup_StudentSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_TeacherStudent_deleted.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_TeacherStudent_deleted_teacher.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testRemoveStudentFromTeacher() {
         // get a teacher with one student
         TeacherSpring teacher = teacherDao.findOne(10001000l);
@@ -147,7 +147,7 @@ public class TeacherStudentSpringTest {
     @DatabaseSetup("setup_TeacherStudent.xml")
     @ExpectedDatabase(value = "setup_TeacherSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "setup_StudentSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_TeacherStudent_deleted.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_TeacherStudent_deleted_teacher.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testRemoveTeacherFromStudent() {
         // get a student with one teacher
         StudentSpring student = studentDao.findOne(20001000l);
@@ -173,6 +173,36 @@ public class TeacherStudentSpringTest {
         // ensure the student is removed from the teacher
         assertThat("teacher shall have no relation to student", teacher.getStudents(),
                 not(hasItem(hasProperty("id", is(student.getId())))));
+
+        em.flush();
+    }
+
+    @Test
+    @DatabaseSetup("setup_TeacherSpring.xml")
+    @DatabaseSetup("setup_StudentSpring.xml")
+    @DatabaseSetup("setup_TeacherStudent.xml")
+    @ExpectedDatabase(value = "expect_TeacherSpring_deleted.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "setup_StudentSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_TeacherStudent_deleted_teacher.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    public void testRemoveTeacher() {
+        TeacherSpring teacher = teacherDao.findOne(10001000l);
+
+        teacherDao.delete(teacher);
+
+        em.flush();
+    }
+
+    @Test
+    @DatabaseSetup("setup_TeacherSpring.xml")
+    @DatabaseSetup("setup_StudentSpring.xml")
+    @DatabaseSetup("setup_TeacherStudent.xml")
+    @ExpectedDatabase(value = "setup_TeacherSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_StudentSpring_deleted.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_TeacherStudent_deleted_student.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    public void testRemoveStudent() {
+        StudentSpring student = studentDao.findOne(20001000l);
+
+        studentDao.delete(student);
 
         em.flush();
     }
