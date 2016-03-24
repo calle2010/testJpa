@@ -35,7 +35,7 @@ public class TeacherSpring {
 
     private String data;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.DETACH })
     @JoinTable(name = "TEACHERS_STUDENTS_SPRING", joinColumns = @JoinColumn(name = "teacher_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "student_ID", referencedColumnName = "ID"))
     private List<StudentSpring> students = new ArrayList<>();
 

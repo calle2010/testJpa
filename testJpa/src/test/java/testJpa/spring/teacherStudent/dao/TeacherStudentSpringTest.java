@@ -3,6 +3,7 @@ package testJpa.spring.teacherStudent.dao;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.describedAs;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
@@ -286,6 +287,84 @@ public class TeacherStudentSpringTest {
         assertThat("teacher shall have relation to student", teacher.getStudents(), hasItem(student));
 
         em.flush();
+    }
+
+    /**
+     * test the detach operation cascades from teacher to student
+     */
+    @Test
+    @DatabaseSetup("setup_TeacherSpring.xml")
+    @DatabaseSetup("setup_StudentSpring.xml")
+    @DatabaseSetup("setup_TeacherStudent.xml")
+    public void testCascadeDetachTeacher() {
+        TeacherSpring teacher = teacherDao.findOne(10001001l);
+        List<StudentSpring> students = teacher.getStudents();
+
+        // assert that all entities are attached
+        assertThat(em.contains(teacher), is(true));
+
+        /*
+         * It seems like EclipseLink is only cascading the detach operation for
+         * loaded objects. Since the teachers collection is lazy-loaded, this
+         * loop makes sure it is loaded.
+         */
+        for (StudentSpring student : students) {
+            assertThat(em.contains(student), is(true));
+        }
+
+        // detach the teacher
+        em.detach(teacher);
+
+        // assert that all entities are detached
+        assertThat(em.contains(teacher), is(false));
+
+        for (StudentSpring student : students) {
+            assertThat(em.contains(student), is(false));
+        }
+
+    }
+
+    /**
+     * Test the detach operation cascades from student to teacher to student.
+     */
+    @Test
+    @DatabaseSetup("setup_TeacherSpring.xml")
+    @DatabaseSetup("setup_StudentSpring.xml")
+    @DatabaseSetup("setup_TeacherStudent.xml")
+    public void testCascadeDetachStudent() {
+        TeacherSpring teacher = teacherDao.findOne(10001001l);
+        List<StudentSpring> students = teacher.getStudents();
+
+        // assert that there are at least 2 students
+        assertThat(students, hasSize(greaterThan(1)));
+
+        // assert that all entities are attached
+        assertThat(em.contains(teacher), is(true));
+
+        for (StudentSpring student : students) {
+            assertThat(em.contains(student), is(true));
+        }
+
+        // get one of the students, doesn't matter which
+        StudentSpring student = students.get(0);
+
+        /*
+         * It seems like EclipseLink is only cascading the detach operation for
+         * loaded objects. Since the teachers collection is lazy-loaded, the
+         * call to size() makes sure it is loaded.
+         */
+        assertThat(student.getTeachers().size(), is(greaterThan(0)));
+
+        // detach one of the students
+        em.detach(student);
+
+        // assert that all entities are detached
+        assertThat(em.contains(teacher), is(false));
+
+        for (StudentSpring st : students) {
+            assertThat(em.contains(st), is(false));
+        }
+
     }
 
 }
