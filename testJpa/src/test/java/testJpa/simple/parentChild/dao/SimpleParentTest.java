@@ -231,6 +231,27 @@ public class SimpleParentTest {
     }
 
     /**
+     * add parent and linked child object
+     */
+    @Test
+    @DatabaseSetup("setup_ParentTable.xml")
+    @DatabaseSetup("setup_ChildTable.xml")
+    @ExpectedDatabase(value = "expect_ParentTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_ChildTable_created_no_IDs.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    public void testCreateParentAndChild() {
+        final ParentTable newParent = new ParentTable();
+        newParent.setData("new entry");
+
+        final ChildTable newChild = new ChildTable();
+        newChild.setData("new child");
+        newParent.addChild(newChild);
+
+        dao.save(newParent);
+
+        em.flush();
+    }
+
+    /**
      * Test batch fetching all parents. See FINE logging level of EclipseLink to
      * verify there are only two SELECTs.
      */

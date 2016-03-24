@@ -1,0 +1,15 @@
+<dataset>
+  <!-- omits the "id" column -->
+  <CHILD_TABLE DATA="two thousand" />
+  <CHILD_TABLE DATA="two thousand ten" />
+  <CHILD_TABLE DATA="two thousand twenty" />
+  <CHILD_TABLE DATA="new child" />
+
+  <CHILD_TABLE DATA="two thousand two" />
+  <CHILD_TABLE DATA="two thousand twelve" />
+  <CHILD_TABLE DATA="two thousand twenty-two" />
+
+  <CHILD_TABLE DATA="two thousand one" />
+  <CHILD_TABLE DATA="two thousand eleven" />
+  <CHILD_TABLE DATA="two thousand twenty-one" />
+</dataset>
