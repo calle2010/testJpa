@@ -114,6 +114,19 @@ public class TeacherSpring {
      */
     public void addStudent(StudentSpring student) {
         student.addTeacherInternal(this);
+        addStudentInternal(student);
+    }
+
+    /**
+     * Add teacher to student. This is package private since it doesn't take
+     * care of the inverse relationship.
+     * 
+     * @param student
+     *            the student to add
+     */
+
+    void addStudentInternal(StudentSpring student) {
         students.add(student);
+
     }
 }

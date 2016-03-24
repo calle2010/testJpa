@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,7 +33,7 @@ public class StudentSpring {
 
     // Specifies mappedBy to use the same join table as specified by
     // TeacherSpring.
-    @ManyToMany(mappedBy = "students")
+    @ManyToMany(mappedBy = "students", cascade = CascadeType.PERSIST)
     private List<TeacherSpring> teachers = new ArrayList<>();
 
     /**
@@ -111,6 +112,17 @@ public class StudentSpring {
     void addTeacherInternal(TeacherSpring teacher) {
         teachers.add(teacher);
 
+    }
+
+    /**
+     * Add teacher and take care of bidirectional relationship.
+     * 
+     * @param teacher
+     *            the teacher to add
+     */
+    public void addTeacher(TeacherSpring teacher) {
+        teacher.addStudentInternal(this);
+        addTeacherInternal(teacher);
     }
 
 }

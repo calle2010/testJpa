@@ -229,4 +229,26 @@ public class TeacherStudentSpringTest {
         em.flush();
     }
 
+    @Test
+    @DatabaseSetup("setup_TeacherSpring.xml")
+    @DatabaseSetup("setup_StudentSpring.xml")
+    @DatabaseSetup("setup_TeacherStudent.xml")
+    @ExpectedDatabase(value = "expect_TeacherSpring_created.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "setup_StudentSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_TeacherStudent_created_teacher.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    public void testCreateTeacherAndRelateToStudent() {
+        TeacherSpring teacher = new TeacherSpring();
+        teacher.setData("new entry");
+
+        StudentSpring student = studentDao.findOne(20001000l);
+
+        student.addTeacher(teacher);
+
+        assertThat("student shall have relation to teacher", student.getTeachers(), hasItem(teacher));
+
+        assertThat("teacher shall have relation to student", teacher.getStudents(), hasItem(student));
+
+        em.flush();
+    }
+
 }
