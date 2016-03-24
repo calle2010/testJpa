@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,7 +35,7 @@ public class TeacherSpring {
 
     private String data;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "TEACHERS_STUDENTS_SPRING", joinColumns = @JoinColumn(name = "teacher_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "student_ID", referencedColumnName = "ID"))
     private List<StudentSpring> students = new ArrayList<>();
 
@@ -112,6 +113,7 @@ public class TeacherSpring {
      *            the student to add
      */
     public void addStudent(StudentSpring student) {
+        student.addTeacherInternal(this);
         students.add(student);
     }
 }
