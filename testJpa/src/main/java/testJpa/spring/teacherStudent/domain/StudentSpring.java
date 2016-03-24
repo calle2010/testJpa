@@ -1,5 +1,6 @@
 package testJpa.spring.teacherStudent.domain;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class StudentSpring {
     // Specifies mappedBy to use the same join table as specified by
     // TeacherSpring.
     @ManyToMany(mappedBy = "students")
-    private List<TeacherSpring> teachers;
+    private List<TeacherSpring> teachers = new ArrayList<>();
 
     /**
      * @return the id
@@ -81,9 +82,10 @@ public class StudentSpring {
      * take care of the inverse relationship.
      * 
      * @param teacherSpring
+     * @return true if the teacher was related to this student
      */
-    void removeTeacherInternal(TeacherSpring teacher) {
-        teachers.remove(teacher);
+    boolean removeTeacherInternal(TeacherSpring teacher) {
+        return teachers.remove(teacher);
     }
 
     /**
@@ -96,7 +98,7 @@ public class StudentSpring {
      */
     public boolean removeTeacher(TeacherSpring teacher) {
         teacher.removeStudentInternal(this);
-        return teachers.remove(teacher);
+        return removeTeacherInternal(teacher);
     }
 
 }

@@ -1,5 +1,6 @@
 package testJpa.spring.teacherStudent.domain;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class TeacherSpring {
 
     @ManyToMany
     @JoinTable(name = "TEACHERS_STUDENTS_SPRING", joinColumns = @JoinColumn(name = "teacher_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "student_ID", referencedColumnName = "ID"))
-    private List<StudentSpring> students;
+    private List<StudentSpring> students = new ArrayList<>();
 
     /**
      * @return the id
@@ -84,7 +85,7 @@ public class TeacherSpring {
      */
     public boolean removeStudent(StudentSpring student) {
         student.removeTeacherInternal(this);
-        return students.remove(student);
+        return removeStudentInternal(student);
     }
 
     @Override
@@ -98,8 +99,19 @@ public class TeacherSpring {
      * 
      * @param student
      *            the student to remove
+     * @return true if student was contained in the relationship
      */
-    void removeStudentInternal(StudentSpring student) {
-        students.remove(student);
+    boolean removeStudentInternal(StudentSpring student) {
+        return students.remove(student);
+    }
+
+    /**
+     * add a student
+     * 
+     * @param student
+     *            the student to add
+     */
+    public void addStudent(StudentSpring student) {
+        students.add(student);
     }
 }
