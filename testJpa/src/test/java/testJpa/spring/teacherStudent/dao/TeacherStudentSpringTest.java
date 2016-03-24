@@ -17,8 +17,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -41,12 +43,16 @@ import testJpa.spring.teacherStudent.domain.TeacherSpring;
  * <p>
  * This class uses DBUnit for database setup and verification of results. All
  * changes are rolled back at the end of a test method.
+ * 
+ * The fix method order is required because of sequence generation which can't
+ * be rolled back.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         TransactionDbUnitTestExecutionListener.class })
 @Transactional
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TeacherStudentSpringTest {
 
     @Autowired
@@ -214,7 +220,7 @@ public class TeacherStudentSpringTest {
     @ExpectedDatabase(value = "setup_TeacherSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_StudentSpring_created.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_TeacherStudent_created_student.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    public void testCreateStudentAndRelateToTeacher() {
+    public void test01CreateStudentAndRelateToTeacher() {
         StudentSpring student = new StudentSpring();
         student.setData("new entry");
 
@@ -236,7 +242,7 @@ public class TeacherStudentSpringTest {
     @ExpectedDatabase(value = "expect_TeacherSpring_created.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "setup_StudentSpring.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_TeacherStudent_created_teacher.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    public void testCreateTeacherAndRelateToStudent() {
+    public void test02CreateTeacherAndRelateToStudent() {
         TeacherSpring teacher = new TeacherSpring();
         teacher.setData("new entry");
 
@@ -258,7 +264,7 @@ public class TeacherStudentSpringTest {
     @ExpectedDatabase(value = "expect_TeacherSpring_created.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_StudentSpring_created.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "expect_TeacherStudent_created_both.xml", override = false, assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    public void testCreateTeacherAndStudentWithRelation() {
+    public void test03CreateTeacherAndStudentWithRelation() {
         TeacherSpring teacher = new TeacherSpring();
         teacher.setData("new entry");
 

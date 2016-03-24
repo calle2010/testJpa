@@ -8,7 +8,8 @@
   <TEACHERS_STUDENTS_SPRING
     TEACHER_ID="10001001"
     STUDENT_ID="20001000" />
+<!-- this has to be two since sequences can't be rolled back -->
   <TEACHERS_STUDENTS_SPRING
-    TEACHER_ID="1"
-    STUDENT_ID="1" />
+    TEACHER_ID="2"
+    STUDENT_ID="2" />
 </dataset>
