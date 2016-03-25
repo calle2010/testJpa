@@ -33,7 +33,7 @@ public class StudentSpring {
 
     // Specifies mappedBy to use the same join table as specified by
     // TeacherSpring.
-    @ManyToMany(mappedBy = "students", cascade = { CascadeType.PERSIST, CascadeType.DETACH })
+    @ManyToMany(mappedBy = "students", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH })
     private List<TeacherSpring> teachers = new ArrayList<>();
 
     /**

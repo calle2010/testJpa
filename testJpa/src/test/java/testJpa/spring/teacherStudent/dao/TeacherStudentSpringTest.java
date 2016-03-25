@@ -367,4 +367,38 @@ public class TeacherStudentSpringTest {
 
     }
 
+    /**
+     * test the merge operation cascades from teacher to student
+     */
+    @Test
+    @DatabaseSetup("setup_TeacherSpring.xml")
+    @DatabaseSetup("setup_StudentSpring.xml")
+    @DatabaseSetup("setup_TeacherStudent.xml")
+    @ExpectedDatabase(value = "expect_TeacherSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "expect_StudentSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    public void testCascadeMergeTeacherStudent() {
+        TeacherSpring teacher = teacherDao.findOne(10001000l);
+        StudentSpring student = teacher.getStudents().get(0);
+
+        // For the cascade to work from student to teacher it is required that
+        // the teacher collection is loaded.
+        assertThat(student.getTeachers(), hasSize(greaterThan(0)));
+
+        em.detach(teacher);
+        em.detach(student);
+
+        teacher.setData("updated");
+        student.setData("updated");
+
+        /*
+         * Now merge the detached and updated records. Without cascade=MERGE
+         * both save methods have to be called. With cascade=MERGE only one of
+         * save(teacher) OR save(student) is required.
+         */
+        teacherDao.save(teacher);
+        // studentDao.save(student);
+
+        em.flush();
+
+    }
 }
