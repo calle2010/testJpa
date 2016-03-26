@@ -28,6 +28,7 @@ import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Commit;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -425,13 +426,16 @@ public class TeacherStudentSpringTest {
      * transaction than the read.
      * <p>
      * This test changes the database since it is required that changes are not
-     * rolled back after end of the transaction.
+     * rolled back after end of the transaction. Therefore it also specifies
+     * DirtiesContext so that changes in the L2 cache after commit are not
+     * affecting following tests.
      */
     @Test
     @DatabaseSetup("setup_TeacherSpring.xml")
     @DatabaseSetup("setup_StudentSpring.xml")
     @DatabaseSetup("setup_TeacherStudent.xml")
     @Commit
+    @DirtiesContext
     public void testCascadeMergeTeacherStudentInTransaction() {
         // End the transaction. Test fixture was created by DBUnit before.
         TestTransaction.end();

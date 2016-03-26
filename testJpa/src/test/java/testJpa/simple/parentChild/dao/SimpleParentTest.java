@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -123,7 +122,6 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @DirtiesContext
     public void testUpdateParentManaged() {
         LOGGER.info("start test update managed");
 
@@ -145,7 +143,6 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @DirtiesContext
     public void testUpdateParentUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final ParentTable st = new ParentTable();
