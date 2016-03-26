@@ -10,6 +10,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -17,17 +19,21 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
@@ -64,6 +70,17 @@ public class TeacherStudentSpringTest {
 
     @PersistenceContext
     EntityManager em;
+
+    private JdbcTemplate jdbc;
+
+    /**
+     * @param dataSource
+     *            the data source to inject to the JDBC Template
+     */
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.jdbc = new JdbcTemplate(dataSource);
+    }
 
     @Test
     @DatabaseSetup("setup_TeacherSpring.xml")
@@ -399,6 +416,55 @@ public class TeacherStudentSpringTest {
         // studentDao.save(student);
 
         em.flush();
+
+    }
+
+    /**
+     * Test the merge operation cascades from teacher to student. The merge is
+     * required in this test because the write happens in a different
+     * transaction than the read.
+     * <p>
+     * This test changes the database since it is required that changes are not
+     * rolled back after end of the transaction.
+     */
+    @Test
+    @DatabaseSetup("setup_TeacherSpring.xml")
+    @DatabaseSetup("setup_StudentSpring.xml")
+    @DatabaseSetup("setup_TeacherStudent.xml")
+    @Commit
+    public void testCascadeMergeTeacherStudentInTransaction() {
+        // End the transaction. Test fixture was created by DBUnit before.
+        TestTransaction.end();
+
+        TeacherSpring teacher = teacherDao.findOne(10001000l);
+        StudentSpring student = teacher.getStudents().get(0);
+
+        // For the cascade to work from student to teacher it is required that
+        // the teacher collection is loaded.
+        assertThat(student.getTeachers(), hasSize(greaterThan(0)));
+
+        teacher.setData("updated");
+        student.setData("updated");
+
+        /*
+         * Now merge the detached and updated records. Without cascade=MERGE
+         * both save methods have to be called. With cascade=MERGE only one of
+         * save(teacher) OR save(student) is required.
+         */
+        TestTransaction.start();
+        assertFalse(TestTransaction.isFlaggedForRollback());
+        // teacherDao.save(teacher);
+        studentDao.save(student);
+
+        // End the transaction to commit changes to the database
+        TestTransaction.end();
+
+        // Assert changes through JDBC to avoid reading through EclipseLinks L2
+        // cache.
+        assertEquals("updated",
+                jdbc.queryForObject("select data from TEACHER_SPRING where id = 10001000", String.class));
+        assertEquals("updated",
+                jdbc.queryForObject("select data from STUDENT_SPRING where id = 20001000", String.class));
 
     }
 }
