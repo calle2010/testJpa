@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Ignore;
@@ -16,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Repeat;
@@ -54,17 +52,6 @@ public class SimpleSpringPerformanceTest {
 
     @PersistenceContext
     EntityManager em;
-
-    private JdbcTemplate jdbc;
-
-    /**
-     * @param dataSource
-     *            the data source to inject to the JDBC Template
-     */
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.jdbc = new JdbcTemplate(dataSource);
-    }
 
     @After
     public void tearDown() {
