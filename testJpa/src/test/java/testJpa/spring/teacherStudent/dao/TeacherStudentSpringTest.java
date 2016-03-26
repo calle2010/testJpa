@@ -202,6 +202,11 @@ public class TeacherStudentSpringTest {
         em.flush();
     }
 
+    /**
+     * Remove a teacher. This should remove the relationship to students as
+     * well. At the same time the students should be unaffected. This test will
+     * fail if cascade=REMOVE is specified for the teacher entity.
+     */
     @Test
     @DatabaseSetup("setup_TeacherSpring.xml")
     @DatabaseSetup("setup_StudentSpring.xml")
@@ -217,6 +222,11 @@ public class TeacherStudentSpringTest {
         em.flush();
     }
 
+    /**
+     * Remove a student. This should remove the relationship to teachers as
+     * well. At the same time the teachers should be unaffected. This test will
+     * fail if cascade=REMOVE is specified for the student entity.
+     */
     @Test
     @DatabaseSetup("setup_TeacherSpring.xml")
     @DatabaseSetup("setup_StudentSpring.xml")
