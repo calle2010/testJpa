@@ -3,6 +3,44 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
+  <!-- Add Spring repositories -->
+  <!-- (you don't need this if you are using a .RELEASE version) -->
+  <repositories>
+    <repository>
+      <id>spring-snapshots</id>
+      <url>http://repo.spring.io/libs-snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  
+  <parent>
+    <groupId>io.spring.platform</groupId>
+    <artifactId>platform-bom</artifactId>
+    <version>2.1.0.BUILD-SNAPSHOT</version>
+  </parent>
+  <url>https://github.com/calle2010/testJpa/</url>
+  <organization>
+    <name>no organization</name>
+  </organization>
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>https://raw.githubusercontent.com/calle2010/testJpa/master/LICENSE</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>calle2010</id>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git@github.com:calle2010/testJpa.git</connection>
+    <url>https://github.com/calle2010/testJpa</url>
+  </scm>
+  
   <groupId>test</groupId>
   <artifactId>testJpa</artifactId>
   <version>0.0.1-SNAPSHOT</version>
@@ -12,6 +50,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <com.sap.cloud.sdk.path>${env.HOME}/Applications/neo-java-web-sdk-2.45.16.2</com.sap.cloud.sdk.path>
     <eclipselink.version>2.6.2</eclipselink.version>
   </properties>
   <dependencies>
@@ -39,6 +78,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.sap.cloud</groupId>
@@ -98,19 +138,15 @@
       <scope>system</scope>
       <systemPath>${com.sap.cloud.sdk.path}/repository/.archive/lib/ngdbc.jar</systemPath>
     </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
   </dependencies>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.spring.platform</groupId>
-        <artifactId>platform-bom</artifactId>
-        <version>2.0.2.RELEASE</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <build>
     <plugins>
@@ -175,5 +211,4 @@
     </pluginManagement>
 
   </build>
-
 </project>
