@@ -186,6 +186,10 @@ public class SimpleParentTest {
 
     /**
      * child object will be removed by orphan removal
+     * 
+     * This test fails with EclipseLink 2.5.2 due to the stream API, see
+     * https://bugs.eclipse.org/bugs/show_bug.cgi?id=433075 and
+     * https://bugs.eclipse.org/bugs/show_bug.cgi?id=467470
      */
     @Test
     @DatabaseSetup("setup_ParentTable.xml")

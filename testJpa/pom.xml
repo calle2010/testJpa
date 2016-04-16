@@ -51,6 +51,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <com.sap.cloud.sdk.path>${env.HOME}/Applications/neo-java-web-sdk-2.45.16.2</com.sap.cloud.sdk.path>
+    <!-- EclipseLink 2.6 is required for testRemoveChild tests to succeed -->
     <eclipselink.version>2.6.2</eclipselink.version>
   </properties>
   <dependencies>
