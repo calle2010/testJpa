@@ -6,11 +6,13 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.FixMethodOrder;
@@ -26,7 +28,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
@@ -202,6 +203,48 @@ public class SimpleTableTest {
         dao.save(st);
         em.flush();
         LOGGER.info("end test update unmanaged");
+    }
+
+    @Test
+    public void testPrePersistValidation() {
+        final SimpleTable st = new SimpleTable();
+
+        try {
+            // entry is too short, min size is three
+            st.setData("1");
+
+            final SimpleTable stPersisted = dao.save(st);
+
+            fail("no exception");
+
+        } catch (ConstraintViolationException cve) {
+            LOGGER.info("excpected exception found", cve);
+            LOGGER.info(cve.getConstraintViolations().toString());
+        } catch (Exception e) {
+            fail("wrong exception");
+        }
+
+    }
+
+    @Test
+    @DatabaseSetup("setup_SimpleTable.xml")
+    public void testPreUpdateValidation() {
+        final SimpleTable st = dao.findOne(10001000l);
+
+        try {
+            // entry is too short, min size is three
+            st.setData("1");
+
+            em.flush();
+
+            fail("no exception");
+
+        } catch (ConstraintViolationException cve) {
+            LOGGER.info("excpected exception found", cve);
+            LOGGER.info(cve.getConstraintViolations().toString());
+        } catch (Exception e) {
+            fail("wrong exception");
+        }
     }
 
 }

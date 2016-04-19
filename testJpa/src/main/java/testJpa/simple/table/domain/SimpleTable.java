@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 /**
  * a simple table without relationships
@@ -21,6 +22,7 @@ public class SimpleTable {
     @OrderBy
     private Long id;
 
+    @Size(min = 3, max = 30)
     private String data;
 
     /**
