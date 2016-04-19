@@ -8,4 +8,4 @@ Technology stack:
  - Spring Framework
  - Spring Data JPA
  - JUnit 4
- - DBUnit (obsolete in favor of Spring TestTransaction)
+ - DBUnit with SpringTestDBUnit
