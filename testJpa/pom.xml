@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <!-- Add Spring repositories -->
   <!-- (you don't need this if you are using a .RELEASE version) -->
   <repositories>
@@ -15,7 +15,7 @@
       </snapshots>
     </repository>
   </repositories>
-  
+
   <parent>
     <groupId>io.spring.platform</groupId>
     <artifactId>platform-bom</artifactId>
@@ -40,7 +40,7 @@
     <connection>scm:git:git@github.com:calle2010/testJpa.git</connection>
     <url>https://github.com/calle2010/testJpa</url>
   </scm>
-  
+
   <groupId>test</groupId>
   <artifactId>testJpa</artifactId>
   <version>0.0.1-SNAPSHOT</version>
@@ -150,6 +150,12 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.web</groupId>
+      <artifactId>javax.el</artifactId>
+      <version>${javax-el.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

@@ -1,10 +1,14 @@
 package testJpa.simple.table.dao;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -233,15 +237,16 @@ public class SimpleTableTest {
 
         try {
             // entry is too short, min size is three
-            st.setData("1");
+            st.setData("a");
 
             em.flush();
 
             fail("no exception");
 
         } catch (ConstraintViolationException cve) {
-            LOGGER.info("excpected exception found", cve);
-            LOGGER.info(cve.getConstraintViolations().toString());
+            LOGGER.info("expected exception found", cve);
+            assertThat(cve.getConstraintViolations(), hasItem(
+                    hasProperty("message", is("the data must have at least 3 characters, but 'a' is shorter"))));
         } catch (Exception e) {
             fail("wrong exception");
         }

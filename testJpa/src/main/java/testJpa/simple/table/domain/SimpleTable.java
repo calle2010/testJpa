@@ -22,7 +22,7 @@ public class SimpleTable {
     @OrderBy
     private Long id;
 
-    @Size(min = 3, max = 30)
+    @Size(min = 3, message = "the data must have at least {min} characters, but '${validatedValue}' is shorter")
     private String data;
 
     /**
