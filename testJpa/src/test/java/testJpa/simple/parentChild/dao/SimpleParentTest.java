@@ -105,7 +105,7 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildTable_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "expect_ChildTable_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testRemoveParentManaged() {
         final ParentTable st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
@@ -121,7 +121,7 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testUpdateParentManaged() {
         LOGGER.info("start test update managed");
 
@@ -142,7 +142,7 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "setup_ChildTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testUpdateParentUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final ParentTable st = new ParentTable();
@@ -195,7 +195,7 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "setup_ParentTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "expect_ChildTable_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testRemoveChild() {
         final ParentTable st = dao.findOne(10001000l);
         final int numberOfChildren = st.getChildren().size();
@@ -216,7 +216,7 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "setup_ParentTable.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "expect_ChildTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testCreateChild() {
         final ParentTable st = dao.findOne(10001000l);
 
@@ -238,7 +238,7 @@ public class SimpleParentTest {
     @DatabaseSetup("setup_ParentTable.xml")
     @DatabaseSetup("setup_ChildTable.xml")
     @ExpectedDatabase(value = "expect_ParentTable_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildTable_created_no_IDs.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "expect_ChildTable_created_no_IDs.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testCreateParentAndChild() {
         final ParentTable newParent = new ParentTable();
         newParent.setData("new entry");

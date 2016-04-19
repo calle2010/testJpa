@@ -402,8 +402,8 @@ public class TeacherStudentSpringTest {
     @DatabaseSetup("setup_TeacherSpring.xml")
     @DatabaseSetup("setup_StudentSpring.xml")
     @DatabaseSetup("setup_TeacherStudent.xml")
-    @ExpectedDatabase(value = "expect_TeacherSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
-    @ExpectedDatabase(value = "expect_StudentSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "expect_TeacherSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @ExpectedDatabase(value = "expect_StudentSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testCascadeMergeTeacherStudent() {
         TeacherSpring teacher = teacherDao.findOne(10001000l);
         StudentSpring student = teacher.getStudents().get(0);

@@ -119,7 +119,7 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "expect_ParentSpring_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildSpring_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "expect_ChildSpring_parent_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testRemoveParentManaged() {
         final ParentSpring st = dao.findOne(10001000l);
         assertNotNull("entity to delete must not be null", st);
@@ -135,9 +135,7 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "expect_ParentSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    // note the override=false on the second annotation. see
-    // https://github.com/springtestdbunit/spring-test-dbunit/issues/64#issuecomment-193465393
-    @ExpectedDatabase(value = "setup_ChildSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "setup_ChildSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testUpdateParentManaged() {
         LOGGER.info("start test update managed");
 
@@ -157,7 +155,7 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "expect_ParentSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "setup_ChildSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "setup_ChildSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testUpdateParentUnmanaged() {
         LOGGER.info("start test update unmanaged");
         final ParentSpring st = new ParentSpring();
@@ -210,7 +208,7 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "setup_ParentSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildSpring_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "expect_ChildSpring_deleted.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testRemoveChild() {
         final ParentSpring st = dao.findOne(10001000l);
         final int numberOfChildren = st.getChildren().size();
@@ -231,7 +229,7 @@ public class ParentSpringTest {
     @DatabaseSetup("setup_ParentSpring.xml")
     @DatabaseSetup("setup_ChildSpring.xml")
     @ExpectedDatabase(value = "setup_ParentSpring.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
-    @ExpectedDatabase(value = "expect_ChildSpring_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED, override = false)
+    @ExpectedDatabase(value = "expect_ChildSpring_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testCreateChild() {
         final ParentSpring st = dao.findOne(10001000l);
 
