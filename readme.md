@@ -7,5 +7,6 @@ Technology stack:
  - EclipseLink
  - Spring Framework
  - Spring Data JPA
+ - Hibernate Validator
  - JUnit 4
  - DBUnit with SpringTestDBUnit
