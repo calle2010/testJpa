@@ -1,17 +1,12 @@
 package testJpa.spring.teacherStudent.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,6 +18,12 @@ import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import testJpa.TestJpaTestConfiguration;
 import testJpa.spring.teacherStudent.domain.TeacherSpring;
@@ -53,16 +54,23 @@ public class TeacherSpringTest {
         assertEquals(3, dao.count());
     }
 
+    /**
+     * Uses @DirtiesContext because a database row is created and the sequence
+     * change can't be rolled back. By dirtying the context Liquibase will on
+     * next invocation drop the database and re-create.
+     */
     @Test
     @DatabaseSetup("setup_TeacherSpring.xml")
     @ExpectedDatabase(value = "expect_TeacherSpring_created.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+    @DirtiesContext
     public void testCreate() {
         final TeacherSpring st = new TeacherSpring();
         st.setData("new entry");
 
         final TeacherSpring stPersisted = dao.save(st);
 
-        assertNotEquals(0, stPersisted.getId().longValue());
+        assertNotEquals(0, stPersisted.getId()
+                .longValue());
 
         assertEquals(4, dao.count());
     }
@@ -76,14 +84,16 @@ public class TeacherSpringTest {
     @Test
     @DatabaseSetup("setup_TeacherSpring.xml")
     public void testFindAll() {
-        assertEquals(3, dao.findAll().size());
+        assertEquals(3, dao.findAll()
+                .size());
     }
 
     @Test
     @DatabaseSetup("setup_TeacherSpring.xml")
     public void testFindById() {
         final TeacherSpring entity = dao.findOne(10001000l);
-        assertEquals(10001000, entity.getId().longValue());
+        assertEquals(10001000, entity.getId()
+                .longValue());
         assertEquals("one thousand", entity.getData());
     }
 

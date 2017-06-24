@@ -79,7 +79,8 @@ public class TestJpaConfiguration {
         // Check EclipseLink logging level FINER too see when DB transactions
         // are started.
         // See SPR-7753
-        ejva.getJpaDialect().setLazyDatabaseTransaction(true);
+        ejva.getJpaDialect()
+                .setLazyDatabaseTransaction(true);
 
         lcemfb.setJpaVendorAdapter(ejva);
 
@@ -88,7 +89,10 @@ public class TestJpaConfiguration {
     }
 
     /**
-     * setup Liquibase
+     * Setup Liquibase. By setDropFirst(true) Liquibase will drop the schema,
+     * including sequences, on each invocation. This means that tests can use
+     * DirtiesContext annotation to enforce Liquibase to clear the database if
+     * required.
      * 
      * @param dataSource
      *            the data source to use
@@ -101,6 +105,7 @@ public class TestJpaConfiguration {
 
         lqb.setDataSource(dataSource);
         lqb.setChangeLog("classpath:liquibase/db.changelog.xml");
+        lqb.setDropFirst(true);
 
         final Map<String, String> params = new HashMap<>();
         params.put("verbose", "true");

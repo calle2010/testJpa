@@ -1,20 +1,5 @@
 package testJpa.spring.teacherStudent.dao;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.describedAs;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -42,6 +27,22 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.describedAs;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import testJpa.TestJpaTestConfiguration;
 import testJpa.spring.teacherStudent.domain.StudentSpring;
 import testJpa.spring.teacherStudent.domain.TeacherSpring;
@@ -51,9 +52,13 @@ import testJpa.spring.teacherStudent.domain.TeacherSpring;
  * <p>
  * This class uses DBUnit for database setup and verification of results. All
  * changes are rolled back at the end of a test method.
- * 
+ * <p>
  * The fix method order is required because of sequence generation which can't
  * be rolled back.
+ * <p>
+ * Uses @DirtiesContext because a databases rows are created and the sequence
+ * changes can't be rolled back. By dirtying the context Liquibase will on next
+ * invocation drop the database and re-create.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestJpaTestConfiguration.class)
@@ -61,6 +66,7 @@ import testJpa.spring.teacherStudent.domain.TeacherSpring;
         TransactionDbUnitTestExecutionListener.class })
 @Transactional
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@DirtiesContext
 public class TeacherStudentSpringTest {
 
     @Autowired
@@ -148,7 +154,8 @@ public class TeacherStudentSpringTest {
 
         // get the student through the DAO: it is the same instance and has the
         // inverse relationship
-        StudentSpring student = studentDao.findOne(students.get(0).getId());
+        StudentSpring student = studentDao.findOne(students.get(0)
+                .getId());
         assertThat(student, sameInstance(students.get(0)));
         assertThat("student shall have relation to teacher", student.getTeachers(),
                 hasItem(hasProperty("id", is(teacher.getId()))));
@@ -157,7 +164,8 @@ public class TeacherStudentSpringTest {
         assertTrue(teacher.removeStudent(student));
 
         // ensure the teacher's got no students
-        assertTrue(teacher.getStudents().isEmpty());
+        assertTrue(teacher.getStudents()
+                .isEmpty());
 
         // ensure the teacher is removed from the student
         assertThat("student shall have no relation to teacher", student.getTeachers(),
@@ -184,7 +192,8 @@ public class TeacherStudentSpringTest {
 
         // get the teacher through the DAO: it is the same instance and has the
         // inverse relationship
-        TeacherSpring teacher = teacherDao.findOne(teachers.get(0).getId());
+        TeacherSpring teacher = teacherDao.findOne(teachers.get(0)
+                .getId());
         assertThat(teacher, sameInstance(teachers.get(0)));
         assertThat("teacher shall have relation to student", teacher.getStudents(),
                 hasItem(hasProperty("id", is(student.getId()))));
@@ -381,7 +390,8 @@ public class TeacherStudentSpringTest {
          * loaded objects. Since the teachers collection is lazy-loaded, the
          * call to size() makes sure it is loaded.
          */
-        assertThat(student.getTeachers().size(), is(greaterThan(0)));
+        assertThat(student.getTeachers()
+                .size(), is(greaterThan(0)));
 
         // detach one of the students
         em.detach(student);
@@ -406,7 +416,8 @@ public class TeacherStudentSpringTest {
     @ExpectedDatabase(value = "expect_StudentSpring_updated.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void testCascadeMergeTeacherStudent() {
         TeacherSpring teacher = teacherDao.findOne(10001000l);
-        StudentSpring student = teacher.getStudents().get(0);
+        StudentSpring student = teacher.getStudents()
+                .get(0);
 
         // For the cascade to work from student to teacher it is required that
         // the teacher collection is loaded.
@@ -451,7 +462,8 @@ public class TeacherStudentSpringTest {
         TestTransaction.end();
 
         TeacherSpring teacher = teacherDao.findOne(10001000l);
-        StudentSpring student = teacher.getStudents().get(0);
+        StudentSpring student = teacher.getStudents()
+                .get(0);
 
         // For the cascade to work from student to teacher it is required that
         // the teacher collection is loaded.
