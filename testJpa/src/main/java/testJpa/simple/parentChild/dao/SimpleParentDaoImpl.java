@@ -100,8 +100,7 @@ public class SimpleParentDaoImpl implements SimpleParentDao {
         final Root<ParentTable> root = cq.from(ParentTable.class);
         cq.where(cb.equal(root.get("data"), data));
 
-        final TypedQuery<ParentTable> tq = em.createQuery(cq);
-        return tq;
+        return em.createQuery(cq);
     }
 
     @Override
@@ -110,7 +109,6 @@ public class SimpleParentDaoImpl implements SimpleParentDao {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
 
         final CriteriaDelete<ParentTable> cq = cb.createCriteriaDelete(ParentTable.class);
-        final Root<ParentTable> root = cq.from(ParentTable.class);
 
         final Query tq = em.createQuery(cq);
 

@@ -22,30 +22,19 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
     @PersistenceContext
     EntityManager em;
 
-    // @PersistenceContext
-    // EntityManager em;
-
     @Override
     public SimpleTable save(final SimpleTable entity) {
-        // EntityManager em = emf.createEntityManager();
-        final SimpleTable st = em.merge(entity);
-        // em.flush();
-        // em.clear();
-        return st;
+        return em.merge(entity);
     }
 
     @Override
     public SimpleTable findOne(final Long id) {
-        // EntityManager em = emf.createEntityManager();
 
-        final SimpleTable entity = em.find(SimpleTable.class, id);
-
-        return entity;
+        return em.find(SimpleTable.class, id);
     }
 
     @Override
     public List<SimpleTable> findAll() {
-        // EntityManager em = emf.createEntityManager();
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<SimpleTable> cq = cb.createQuery(SimpleTable.class);
@@ -57,7 +46,6 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
 
     @Override
     public long count() {
-        // EntityManager em = emf.createEntityManager();
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -71,14 +59,12 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
 
     @Override
     public void delete(final SimpleTable entity) {
-        // EntityManager em = emf.createEntityManager();
 
         em.remove(entity);
     }
 
     @Override
     public boolean exists(final Long id) {
-        // EntityManager em = emf.createEntityManager();
 
         return null != em.find(SimpleTable.class, id);
 
@@ -86,7 +72,6 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
 
     @Override
     public boolean isEmpty() {
-        // EntityManager em = emf.createEntityManager();
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -101,7 +86,6 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
 
     @Override
     public List<SimpleTable> findByData(final String data) {
-        // EntityManager em = emf.createEntityManager();
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -120,8 +104,6 @@ public class SimpleTableDaoImpl implements SimpleTableDao {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
 
         final CriteriaDelete<SimpleTable> cq = cb.createCriteriaDelete(SimpleTable.class);
-        final Root<SimpleTable> root = cq.from(SimpleTable.class);
-
         final Query tq = em.createQuery(cq);
 
         tq.executeUpdate();
