@@ -16,7 +16,7 @@
         value="none" />
       <property
         name="eclipselink.logging.level"
-        value="FINER" />
+        value="WARNING" />
       <property
         name="eclipselink.weaving"
         value="static" />
